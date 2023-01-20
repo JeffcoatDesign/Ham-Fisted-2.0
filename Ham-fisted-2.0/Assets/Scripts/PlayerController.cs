@@ -143,7 +143,8 @@ public class PlayerController : MonoBehaviour
         GameManager.instance.ShuffleSpawnPoints();
         Transform target = GameManager.instance.spawnPoints.First(x => !x.isCollidingWithPlayer).transform;
         transform.position = target.position;
-        transform.rotation = target.rotation;
+        boxingGloveController.transform.rotation = target.rotation;
+        vCam.GetCinemachineComponent<CinemachineOrbitalTransposer>().ForceCameraPosition(Vector3.zero, Quaternion.identity);
     }
 
     public void AddKill (int index)

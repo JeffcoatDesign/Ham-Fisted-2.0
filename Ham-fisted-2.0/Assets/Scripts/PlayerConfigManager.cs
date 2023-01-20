@@ -14,6 +14,7 @@ public class PlayerConfigManager : MonoBehaviour
     public UnityEvent allReady;
     public UnityEvent firstPlayerJoined;
     public Transform[] menuPositions;
+
     private void Awake()
     {
         if (instance != null)
@@ -43,11 +44,12 @@ public class PlayerConfigManager : MonoBehaviour
         foreach(PlayerConfig pc in playerConfigs) {
             pc.Input.SwitchCurrentActionMap("Game");
             pc.Player.inGameScene = (nextName != "Menu");
-            pc.Player.rig.isKinematic = (nextName == "Menu");
+            pc.Player.rig.velocity = Vector3.zero;
             if (nextName == "Menu")
             {
                 PositionInMenu(pc);
-                pc.Input.SwitchCurrentActionMap("Menu");
+                if (pc.playerIndex == 0)
+                    pc.Input.SwitchCurrentActionMap("Menu");
             }
         }
     }
@@ -72,13 +74,17 @@ public class PlayerConfigManager : MonoBehaviour
         {
             playerConfigs.Add(new PlayerConfig(pi, player));
         }
-        if (SceneManager.GetActiveScene().name == "Menu")
+        if (SceneManager.GetActiveScene().name == "Menu") { 
             PositionInMenu(playerConfigs[pi.playerIndex]);
+            if(pi.playerIndex != 0)
+                pi.SwitchCurrentActionMap("Game");
+        }
     }
 
     void PositionInMenu(PlayerConfig pc)
     {
         pc.Player.transform.position = menuPositions[pc.playerIndex].position;
+        pc.Player.transform.rotation = menuPositions[pc.playerIndex].rotation;
     }
 }
 

@@ -32,8 +32,6 @@ public class Menu : MonoBehaviour
     public Button startButton;
 
     [Header("Lobby")]
-    public TextMeshProUGUI playerListText;
-    public TextMeshProUGUI roomInfoText;
     public Button startGameButton;
 
     [Header("Tutorial Screen")]
@@ -41,6 +39,10 @@ public class Menu : MonoBehaviour
 
     [Header("Credits Screen")]
     public Button creditsBackButton;
+
+    [Header("Cameras")]
+    public GameObject menuVCam;
+    public GameObject lobbyVCam;
 
     void Start ()
     {
@@ -71,10 +73,18 @@ public class Menu : MonoBehaviour
         //activate requested screen
         screen.SetActive(true);
 
-        if(screen == lobbyScreen)
+        if (screen == lobbyScreen)
+        {
             startGameButton.Select();
+            menuVCam.SetActive(false);
+            lobbyVCam.SetActive(true);
+        }
         if (screen == mainScreen)
+        {
             startButton.Select();
+            menuVCam.SetActive(true);
+            lobbyVCam.SetActive(false);
+        }
         if (screen == tutorialScreen)
             tutorialBackButton.Select();
         if (screen == creditsScreen)
@@ -96,11 +106,7 @@ public class Menu : MonoBehaviour
     {
         SetScreen(mainScreen);
     }
-    // LOGIN SCREEN
-    public void OnLogin()
-    {
-        SetScreen(mainScreen);
-    }
+    // MENU SCREEN
 
     public void OnStartButton ()
     {
@@ -117,25 +123,12 @@ public class Menu : MonoBehaviour
         SetScreen(creditsScreen);
     }
 
+    public void OnFeedbackButton ()
+    {
+        Application.OpenURL("https://docs.google.com/forms/d/e/1FAIpQLSdUhQNas3QVP9-uNUv1NSDOjVwAxZjjk2LB2h7McDcg6bdNCw/viewform?usp=sf_link");
+    }
+
     //LOBBY SCREEN
-
-    public void OnJoined()
-    {
-        SetScreen(lobbyScreen);
-        UpdateLobbyUI();
-    }
-
-    void UpdateLobbyUI ()
-    {
-        //display all players
-        playerListText.text = "";
-
-        foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
-            playerListText.text += pc.Player.nickname + "\n";
-
-        // set room info text
-        roomInfoText.text = "<b>Room Name</b> \n" + "Change this";
-    }
 
     public void OnStartGameButton ()
     {
