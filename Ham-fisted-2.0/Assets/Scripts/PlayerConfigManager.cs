@@ -12,6 +12,7 @@ public class PlayerConfigManager : MonoBehaviour
     [SerializeField] private int MaxPlayers = 4;
     public static PlayerConfigManager instance { get; private set; }
     public UnityEvent allReady;
+    public UnityEvent firstPlayerJoined;
     public Transform[] menuPositions;
     private void Awake()
     {
@@ -32,16 +33,22 @@ public class PlayerConfigManager : MonoBehaviour
         SceneManager.activeSceneChanged += ChangeActiveScene;
         if (allReady == null)
             allReady = new UnityEvent();
+        if (firstPlayerJoined == null)
+            firstPlayerJoined = new UnityEvent();
     }
 
     void ChangeActiveScene(Scene current, Scene next)
     {
         string nextName = next.name;
         foreach(PlayerConfig pc in playerConfigs) {
+            pc.Input.SwitchCurrentActionMap("Game");
             pc.Player.inGameScene = (nextName != "Menu");
             pc.Player.rig.isKinematic = (nextName == "Menu");
             if (nextName == "Menu")
+            {
                 PositionInMenu(pc);
+                pc.Input.SwitchCurrentActionMap("Menu");
+            }
         }
     }
 
@@ -56,6 +63,8 @@ public class PlayerConfigManager : MonoBehaviour
 
     public void HandlePlayerJoin (PlayerInput pi)
     {
+        if (playerConfigs.Count < 1)
+            firstPlayerJoined.Invoke();
         GameObject playerGO = pi.transform.parent.gameObject;
         PlayerController player = playerGO.GetComponentInChildren<PlayerController>();
         playerGO.transform.SetParent(transform);

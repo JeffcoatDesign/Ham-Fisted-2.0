@@ -23,7 +23,6 @@ public class PlayerController : MonoBehaviour
     public MeshRenderer boxingGlove;
     public MeshRenderer sphereMinimap;
     public BoxingGloveController boxingGloveController;
-    public FloatingNameTag nameTag;
     public Color[] colors;
 
     private Vector2 movementInput;
@@ -56,7 +55,6 @@ public class PlayerController : MonoBehaviour
         }
         SetColor(id);
         nickname = "Player " + (id + 1);
-        nameTag.SetName(nickname);
         lastHitBy = id;
 
         /*if (!photonView.IsMine)

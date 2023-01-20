@@ -26,27 +26,31 @@ public class Menu : MonoBehaviour
     public GameObject lobbyScreen;
     public GameObject tutorialScreen;
     public GameObject creditsScreen;
+    public GameObject startScreen;
 
     [Header("Main Screen")]
-    public Button createRoomButton;
+    public Button startButton;
 
     [Header("Lobby")]
     public TextMeshProUGUI playerListText;
     public TextMeshProUGUI roomInfoText;
     public Button startGameButton;
 
-    [Header("Lobby Browser")]
-    public RectTransform roomListContainer;
-    public GameObject roomButtonPrefab;
+    [Header("Tutorial Screen")]
+    public Button tutorialBackButton;
 
-    private List<GameObject> roomButtons = new List<GameObject>();
+    [Header("Credits Screen")]
+    public Button creditsBackButton;
 
     void Start ()
     {
         if (PlayerConfigManager.instance == null)
         {
-            Instantiate(pCM);
+            PlayerConfigManager cM = Instantiate(pCM).GetComponent<PlayerConfigManager>();
+            cM.firstPlayerJoined.AddListener(OnPlayerOneJoined);
+            SetScreen(startScreen);
         }
+        else SetScreen(lobbyScreen);
         //enable the cursor
         Cursor.lockState = CursorLockMode.None;
 
@@ -62,9 +66,30 @@ public class Menu : MonoBehaviour
         lobbyScreen.SetActive(false);
         tutorialScreen.SetActive(false);
         creditsScreen.SetActive(false);
+        startScreen.SetActive(false);
 
         //activate requested screen
         screen.SetActive(true);
+
+        if(screen == lobbyScreen)
+            startGameButton.Select();
+        if (screen == mainScreen)
+            startButton.Select();
+        if (screen == tutorialScreen)
+            tutorialBackButton.Select();
+        if (screen == creditsScreen)
+            creditsBackButton.Select();
+    }
+
+    public void OnPlayerOneJoined ()
+    {
+        StartCoroutine("WaitToStart");
+    }
+
+    IEnumerator WaitToStart()
+    {
+        yield return new WaitForEndOfFrame();
+        SetScreen(mainScreen);
     }
 
     public void OnBackButton ()
