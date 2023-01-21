@@ -229,11 +229,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1045522361908a945bd7387395ebdcc9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pIM: {fileID: 7214235955417982703}
   MaxPlayers: 4
   allReady:
     m_PersistentCalls:
       m_Calls: []
   firstPlayerJoined:
+    m_PersistentCalls:
+      m_Calls: []
+  playerJoined:
     m_PersistentCalls:
       m_Calls: []
   menuPositions:

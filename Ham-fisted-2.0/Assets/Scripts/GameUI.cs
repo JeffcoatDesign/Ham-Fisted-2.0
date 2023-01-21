@@ -10,14 +10,8 @@ public class GameUI : MonoBehaviour
     public TextMeshProUGUI winText;
     public TextMeshProUGUI timerText;
 
-    public static GameUI instance;
-
     private PlayerIcon[] icons = new PlayerIcon[12];
 
-    private void Awake()
-    {
-        instance = this;
-    }
 
     public void SpawnPlayerIcon (int index)
     {

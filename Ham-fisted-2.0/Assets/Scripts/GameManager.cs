@@ -37,6 +37,7 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        cameraManager = gameObject.GetComponent<CameraManager>();
         ShuffleSpawnPoints();
         players = new PlayerController[PlayerConfigManager.instance.playerConfigs.Count];
         foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
@@ -45,10 +46,9 @@ public class GameManager : MonoBehaviour
             pc.Player.Initialize(pc);
             alivePlayers++;
             playersInGame++;
-            GameUI.instance.SpawnPlayerIcon(pc.playerIndex);
+            cameraManager.gameUIs[pc.playerIndex].SpawnPlayerIcon(pc.playerIndex);
             pc.Player.transform.position = spawnPoints[pc.playerIndex].transform.position;
         }
-        cameraManager = gameObject.GetComponent<CameraManager>();
         StatTracker.instance.SetGamemode();
         Cursor.lockState = CursorLockMode.Locked;
         cameraManager.Initiate(playersInGame);
@@ -63,7 +63,9 @@ public class GameManager : MonoBehaviour
         currentTime = Time.time - startTime;
         if (gameTime - currentTime <= 0)
             TimerOver();
-        GameUI.instance.SetTimerText(gameTime - currentTime);
+
+        foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
+            cameraManager.gameUIs[pc.playerIndex].SetTimerText(gameTime - currentTime);
     }
 
     public PlayerController GetPlayer(int playerId)
@@ -96,7 +98,8 @@ public class GameManager : MonoBehaviour
         {
             // Debug for testing on singleplayer Invoke("GoToStatsScreen", postGameTime);
             Invoke("GoBackToMenu", postGameTime);
-            GameUI.instance.SetWinText("No one");
+            foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
+                cameraManager.gameUIs[pc.playerIndex].SetWinText("No one");
         }
     }
 
@@ -123,7 +126,8 @@ public class GameManager : MonoBehaviour
     void WinGame(int winningPlayer)
     {
         // set the UI Win Text
-        GameUI.instance.SetWinText(GetPlayer(winningPlayer).nickname);
+        foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
+            cameraManager.gameUIs[pc.playerIndex].SetWinText(GetPlayer(winningPlayer).nickname);
 
         Invoke("GoBackToMenu", postGameTime);
     }

@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.Linq;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 public class Menu : MonoBehaviour
 {
@@ -33,6 +35,7 @@ public class Menu : MonoBehaviour
 
     [Header("Lobby")]
     public Button startGameButton;
+    public TextMeshProUGUI[] playerLabels;
 
     [Header("Tutorial Screen")]
     public Button tutorialBackButton;
@@ -46,13 +49,19 @@ public class Menu : MonoBehaviour
 
     void Start ()
     {
-        if (PlayerConfigManager.instance == null)
-        {
+        if (PlayerConfigManager.instance == null) {
             PlayerConfigManager cM = Instantiate(pCM).GetComponent<PlayerConfigManager>();
             cM.firstPlayerJoined.AddListener(OnPlayerOneJoined);
+            cM.playerJoined.AddListener(OnPlayerJoined);
             SetScreen(startScreen);
         }
-        else SetScreen(lobbyScreen);
+        else { 
+            SetScreen(lobbyScreen);
+            foreach(TextMeshProUGUI label in playerLabels)
+            {
+                HideLabel(label);
+            }
+        }
         //enable the cursor
         Cursor.lockState = CursorLockMode.None;
 
@@ -96,6 +105,11 @@ public class Menu : MonoBehaviour
         StartCoroutine("WaitToStart");
     }
 
+    public void OnPlayerJoined ()
+    {
+        HideLabel(playerLabels.First(label => label.alpha > 0));
+    }
+
     IEnumerator WaitToStart()
     {
         yield return new WaitForEndOfFrame();
@@ -135,8 +149,18 @@ public class Menu : MonoBehaviour
         SceneManager.LoadScene(selectedStage);
     }
 
-    public void OnLeaveLobbyButton ()
+    public void OnLeaveLobbyButton()
     {
         SetScreen(mainScreen);
+    }
+
+    void HideLabel (TextMeshProUGUI label)
+    {
+        label.alpha = 0;
+    }
+
+    void ShowLabel(TextMeshProUGUI label)
+    {
+        label.alpha = 100;
     }
 }

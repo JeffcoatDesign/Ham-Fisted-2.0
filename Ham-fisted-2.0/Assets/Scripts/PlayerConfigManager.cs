@@ -8,11 +8,13 @@ using System.Linq;
 //https://www.youtube.com/watch?v=_5pOiYHJgl0
 public class PlayerConfigManager : MonoBehaviour
 {
+    public PlayerInputManager pIM;
     public List<PlayerConfig> playerConfigs;
     [SerializeField] private int MaxPlayers = 4;
     public static PlayerConfigManager instance { get; private set; }
     public UnityEvent allReady;
     public UnityEvent firstPlayerJoined;
+    public UnityEvent playerJoined;
     public Transform[] menuPositions;
 
     private void Awake()
@@ -36,6 +38,8 @@ public class PlayerConfigManager : MonoBehaviour
             allReady = new UnityEvent();
         if (firstPlayerJoined == null)
             firstPlayerJoined = new UnityEvent();
+        if (playerJoined == null)
+            playerJoined = new UnityEvent();
     }
 
     void ChangeActiveScene(Scene current, Scene next)
@@ -65,6 +69,7 @@ public class PlayerConfigManager : MonoBehaviour
 
     public void HandlePlayerJoin (PlayerInput pi)
     {
+        playerJoined.Invoke();
         if (playerConfigs.Count < 1)
             firstPlayerJoined.Invoke();
         GameObject playerGO = pi.transform.parent.gameObject;
@@ -79,6 +84,13 @@ public class PlayerConfigManager : MonoBehaviour
             if(pi.playerIndex != 0)
                 pi.SwitchCurrentActionMap("Game");
         }
+    }
+
+    [ContextMenu("Spawn Debug Character")]
+    void SpawnDebugPlayer ()
+    {
+        Gamepad gP = InputSystem.AddDevice<Gamepad>();
+        pIM.JoinPlayer();
     }
 
     void PositionInMenu(PlayerConfig pc)

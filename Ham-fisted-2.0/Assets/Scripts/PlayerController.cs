@@ -129,7 +129,7 @@ public class PlayerController : MonoBehaviour
                 GameManager.instance.GetPlayer(lastHitBy).AddKill(id);
             lastHitBy = id;
         }
-        GameUI.instance.RemoveLife(id);
+        CameraManager.instance.gameUIs[id].RemoveLife(id);
         if (livesLeft <= 0)
             Die();
         if (dead)
@@ -157,7 +157,7 @@ public class PlayerController : MonoBehaviour
     {
         dead = true;
         GameManager.instance.alivePlayers -= 1;
-        GameUI.instance.RemoveIcon(id);
+        CameraManager.instance.gameUIs[id].RemoveIcon(id);
 
         ChangeFocusedPlayer();
         if (spectators.Count != 0)
@@ -206,9 +206,11 @@ public class PlayerController : MonoBehaviour
 
     void MoveSpectators()
     {
+        if (spectators.Count == 0)
+            return;
         foreach (PlayerController spectator in spectators)
         {
-            spectator.ChangeFocusedPlayer();
+            spectator.Invoke("ChangeFocusedPlayer", 0.1f);
         }
     }
 }
