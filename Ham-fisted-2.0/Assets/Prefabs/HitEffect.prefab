@@ -5285,5 +5285,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b0e338037121284382b6bfdb344d3c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  music: {fileID: 6752021314903524216}
+  volumeParameter: sfxVolume
+  audioSource: {fileID: 6752021314903524216}
   volumeSlider: {fileID: 0}

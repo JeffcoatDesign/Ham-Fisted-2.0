@@ -20,5 +20,8 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Brawl Disc.unity
     guid: f8e524c33ef8d3a40811380ae4768c05
+  - enabled: 1
+    path: Assets/Scenes/Zone Test.unity
+    guid: 002d7b954a1c13643928c2e0f628137f
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 8e11d88b0becc92408bb616748def0c9, type: 2}

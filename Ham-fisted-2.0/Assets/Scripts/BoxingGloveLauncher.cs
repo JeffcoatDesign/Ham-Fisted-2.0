@@ -7,7 +7,9 @@ public class BoxingGloveLauncher : MonoBehaviour
     public int id;
     public bool canHit = false;
     public float force;
-    public GameObject impact;
+    public float charge = 0;
+    [SerializeField] private GameObject impact;
+    [SerializeField] private float chargeMult = 1f;
     private bool hittingPlayer = false;
     private void OnTriggerStay(Collider other)
     {
@@ -15,7 +17,7 @@ public class BoxingGloveLauncher : MonoBehaviour
             return;
         if (other.gameObject.CompareTag("Player"))
         {
-            other.gameObject.GetComponent<PlayerController>().GetHit(transform.position, force, id);
+            other.gameObject.GetComponent<PlayerController>().GetHit(transform.position, force + (charge * chargeMult), id);
             hittingPlayer = true;
         }
     }

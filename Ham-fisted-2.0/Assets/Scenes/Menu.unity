@@ -425,7 +425,7 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: ce2e59496f8999347964b97e6a17d5df, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9e582a8da688b5b459b35d071290cd72, type: 2}
   m_sharedMaterial: {fileID: -5871156856296514215, guid: ce2e59496f8999347964b97e6a17d5df, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
@@ -450,8 +450,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 109.6
-  m_fontSizeBase: 109.6
+  m_fontSize: 53.29
+  m_fontSizeBase: 53.29
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -489,7 +489,7 @@ MonoBehaviour:
   m_margin: {x: 0, y: 0, z: 0, w: 0}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
-  m_hasFontAssetChanged: 0
+  m_hasFontAssetChanged: 1
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!222 &574918454
@@ -1961,6 +1961,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: FloorObject
       objectReference: {fileID: 0}
+    - target: {fileID: 3714830523300752523, guid: 47e5245d33e23a347b54cff0a303dd01, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: b536181a3d7cc2746a5120a93bcac5ac, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 47e5245d33e23a347b54cff0a303dd01, type: 3}
 --- !u!1 &1696454768
@@ -2420,8 +2424,8 @@ MonoBehaviour:
 
 '
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: ce2e59496f8999347964b97e6a17d5df, type: 2}
-  m_sharedMaterial: {fileID: -5871156856296514215, guid: ce2e59496f8999347964b97e6a17d5df, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9e582a8da688b5b459b35d071290cd72, type: 2}
+  m_sharedMaterial: {fileID: -1330880467523436139, guid: 9e582a8da688b5b459b35d071290cd72, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2445,8 +2449,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 71.5
-  m_fontSizeBase: 71.5
+  m_fontSize: 53.29
+  m_fontSizeBase: 53.29
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -5416,9 +5420,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Code: Jacob Jeffcoat
+  m_text: 'Technical Lead: Jacob Jeffcoat
 
-    Modeling: Dylan Fallon
+    Art Lead: Dylan Fallon
 
 
     Music
@@ -5426,7 +5430,7 @@ MonoBehaviour:
     "The
     Rave Party" by Snabisch
 
-    "Post Adventure Tea Party" by Zane Little Music'
+    "Wonders of the Hamster Ball" by Dylan Fallon'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 471cf95fcac88a444bb973112177ae5b, type: 2}
   m_sharedMaterial: {fileID: 234606578579266761, guid: 471cf95fcac88a444bb973112177ae5b, type: 2}
@@ -7928,7 +7932,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b0e338037121284382b6bfdb344d3c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  music: {fileID: 6295567500068576166}
+  volumeParameter: musicVolume
+  audioSource: {fileID: 6295567500068576166}
   volumeSlider: {fileID: 5375829333666793808}
 --- !u!82 &6295567500068576166
 AudioSource:
@@ -7940,7 +7945,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 5e8d61696cf914c4691e4b4bbca4af09, type: 3}
+  m_audioClip: {fileID: 8300000, guid: 501b049394ef531408da238eae1be9a6, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1

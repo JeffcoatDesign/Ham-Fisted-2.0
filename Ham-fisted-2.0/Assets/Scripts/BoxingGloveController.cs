@@ -20,8 +20,15 @@ public class BoxingGloveController : MonoBehaviour
     public float springCompressScale = 0.5f;
 
     public bool isAttacking = false;
+    [SerializeField] private float chargeAmount = 0.01f;
+    private float charge = 0;
     private float punchStartTime;
     private Vector2 movementInput;
+
+    public void ResetVariables ()
+    {
+        charge = 0;
+    }
 
     void Update()
     {
@@ -63,6 +70,12 @@ public class BoxingGloveController : MonoBehaviour
         {
             total = Quaternion.Euler(0, Mathf.LerpAngle(cr, tr, Time.deltaTime * speed), 0);
             transform.rotation = total;
+            if (total.eulerAngles.y > cr)
+                charge = Mathf.Clamp(charge - chargeAmount, -1, 1);
+            if (total.eulerAngles.y < cr)
+                charge = Mathf.Clamp(charge + chargeAmount, -1, 1);
+            if(CameraManager.instance != null)
+                CameraManager.instance.playerGameUIs[playerController.id].UpdateSliderValue(Mathf.Abs(charge));
         }
     }
 
@@ -76,8 +89,10 @@ public class BoxingGloveController : MonoBehaviour
 
     IEnumerator Attack()
     {
+        float attackCharge = Mathf.Abs(charge);
         isAttacking = true;
         bGL.canHit = true;
+        bGL.charge = attackCharge;
         punchStartTime = Time.time;
         float time = Time.time - punchStartTime;
         yield return null;
@@ -96,6 +111,10 @@ public class BoxingGloveController : MonoBehaviour
         springTransform.localScale = new Vector3(1, 1, springCompressScale);
         isAttacking = false;
         bGL.canHit = false;
+        bGL.charge = 0;
+        charge = 0;
+        if(CameraManager.instance != null)
+            CameraManager.instance.playerGameUIs[playerController.id].UpdateSliderValue(Mathf.Abs(charge));
         yield return null;
     }
 }

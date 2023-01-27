@@ -55,11 +55,15 @@ public class Menu : MonoBehaviour
             cM.playerJoined.AddListener(OnPlayerJoined);
             SetScreen(startScreen);
         }
-        else { 
+        else
+        {
+            PlayerConfigManager cM = PlayerConfigManager.instance;
+            cM.firstPlayerJoined.AddListener(OnPlayerOneJoined);
+            cM.playerJoined.AddListener(OnPlayerJoined);
             SetScreen(lobbyScreen);
-            foreach(TextMeshProUGUI label in playerLabels)
+            foreach(PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
             {
-                HideLabel(label);
+                HideLabel(playerLabels[pc.playerIndex]);
             }
         }
         //enable the cursor
@@ -147,6 +151,12 @@ public class Menu : MonoBehaviour
     public void OnStartGameButton ()
     {
         SceneManager.LoadScene(selectedStage);
+    }
+
+    [ContextMenu("Load Zone Scene")]
+    void LoadZoneTest ()
+    {
+        SceneManager.LoadScene("Zone Test");
     }
 
     public void OnLeaveLobbyButton()

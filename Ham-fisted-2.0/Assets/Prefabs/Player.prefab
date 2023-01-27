@@ -577,6 +577,7 @@ MonoBehaviour:
   swingLength: 2
   springCompressScale: 0.5
   isAttacking: 0
+  chargeAmount: 0.01
 --- !u!1 &2681180787901976656
 GameObject:
   m_ObjectHideFlags: 0
@@ -944,7 +945,9 @@ MonoBehaviour:
   id: 0
   canHit: 0
   force: 5
+  charge: 0
   impact: {fileID: 1166514863065396718, guid: 715e3ad4027438a408b421cd0cf72319, type: 3}
+  chargeMult: 5
 --- !u!1 &6753354402403694270
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,12 +11,10 @@ public class StatTracker : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        DontDestroyOnLoad(gameObject);
     }
     #endregion
 
-    public int[] killedPlayers = new int[0];
-    public int[] killedMe = new int[0];
+    public Vector2[] kos { get; private set; }
     
     public float time;
     [HideInInspector] public string gamemode;
@@ -30,19 +28,14 @@ public class StatTracker : MonoBehaviour
         isTimeBased = GameManager.instance.isTimeBased;
     }
 
-    public void AddKill (int index)
+    public void AddKO (int hitter, int fell)
     {
-        //Debug.Log("Knocked Out: Player " + index);
-        List<int> tempList = new List<int>(killedPlayers);
-        tempList.Add(index);
-        killedPlayers = tempList.ToArray();
-    }
-
-    public void AddDeath (int index)
-    {
-        //Debug.Log("Knocked Down By: Player " + index);
-        List<int> tempList = new List<int>(killedMe);
-        tempList.Add(index);
-        killedMe = tempList.ToArray();
+        List<Vector2> tempList;
+        if (kos != null)
+            tempList = new List<Vector2>(kos);
+        else 
+            tempList = new();
+        tempList.Add(new(hitter, fell));
+        kos = tempList.ToArray();
     }
 }

@@ -141,5 +141,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b0e338037121284382b6bfdb344d3c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  music: {fileID: 4349722165807165080}
+  volumeParameter: musicVolume
+  audioSource: {fileID: 4349722165807165080}
   volumeSlider: {fileID: 0}

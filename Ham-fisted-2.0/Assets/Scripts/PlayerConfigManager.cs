@@ -45,6 +45,9 @@ public class PlayerConfigManager : MonoBehaviour
     void ChangeActiveScene(Scene current, Scene next)
     {
         string nextName = next.name;
+        pIM.EnableJoining();
+        if (nextName != "Menu")
+            pIM.DisableJoining();
         foreach(PlayerConfig pc in playerConfigs) {
             pc.Input.SwitchCurrentActionMap("Game");
             pc.Player.inGameScene = (nextName != "Menu");
@@ -55,6 +58,14 @@ public class PlayerConfigManager : MonoBehaviour
                 if (pc.playerIndex == 0)
                     pc.Input.SwitchCurrentActionMap("Menu");
             }
+        }
+    }
+
+    public void EnableControls(string scheme)
+    {
+        foreach (PlayerConfig pc in playerConfigs)
+        {
+            pc.Input.SwitchCurrentActionMap(scheme);
         }
     }
 

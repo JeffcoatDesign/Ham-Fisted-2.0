@@ -6,16 +6,23 @@ using UnityEngine.UI;
 
 public class AudioManager : MonoBehaviour
 {
-    public AudioSource music;
-    public Slider volumeSlider;
-    private float volume;
+    [SerializeField] private string volumeParameter;
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private Slider volumeSlider;
+    private float volume = 0.5f;
+
+    private void Awake()
+    {
+        if (PlayerPrefs.HasKey(volumeParameter)) { 
+            volume = PlayerPrefs.GetFloat(volumeParameter);
+        }
+    }
 
     private void Start()
     {
-        volume = .5f;
         if (volumeSlider != null)
             volumeSlider.value = volume;
-        music.volume = volume;
+        audioSource.volume = volume;
     }
 
     public void OnSliderValueChanged()
@@ -25,7 +32,9 @@ public class AudioManager : MonoBehaviour
 
     public void HandleSliderValueChanged (float value)
     {
+        PlayerPrefs.SetFloat(volumeParameter, value);
+        PlayerPrefs.Save();
         volume = value;
-        music.volume = volume;
+        audioSource.volume = volume;
     }
 }

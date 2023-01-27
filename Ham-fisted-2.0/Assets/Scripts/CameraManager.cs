@@ -11,7 +11,7 @@ public class CameraManager : MonoBehaviour
     public Camera p2Cam;
     public Camera p3Cam;
     public Camera p4Cam;
-    public GameUI[] gameUIs;
+    public PlayerGameUI[] playerGameUIs;
 
     public void Start()
     {
@@ -24,7 +24,7 @@ public class CameraManager : MonoBehaviour
             p1Cam.rect = new Rect(0, 0, 0.5f, 1);
             p2Cam.rect = new Rect(0.5f, 0, 0.5f, 1);
             p2Cam.gameObject.SetActive(true);
-            gameUIs[1].gameObject.SetActive(true);
+            playerGameUIs[1].gameObject.SetActive(true);
         }
         else if (numLocPlayers == 3)
         {
@@ -33,9 +33,9 @@ public class CameraManager : MonoBehaviour
             p3Cam.rect = new Rect(0.25f, 0, 0.5f, 0.5f);
             p2Cam.gameObject.SetActive(true);
             p3Cam.gameObject.SetActive(true);
-            gameUIs[0].gameObject.SetActive(true);
-            gameUIs[1].gameObject.SetActive(true);
-            gameUIs[2].gameObject.SetActive(true);
+            playerGameUIs[0].gameObject.SetActive(true);
+            playerGameUIs[1].gameObject.SetActive(true);
+            playerGameUIs[2].gameObject.SetActive(true);
         }
         else if (numLocPlayers == 4)
         {
@@ -44,11 +44,11 @@ public class CameraManager : MonoBehaviour
             p2Cam.gameObject.SetActive(true);
             p3Cam.gameObject.SetActive(true);
             p4Cam.gameObject.SetActive(true);
-            gameUIs[0].gameObject.SetActive(true);
-            gameUIs[1].gameObject.SetActive(true);
-            gameUIs[2].gameObject.SetActive(true);
-            gameUIs[3].gameObject.SetActive(true);
+            playerGameUIs[0].gameObject.SetActive(true);
+            playerGameUIs[1].gameObject.SetActive(true);
+            playerGameUIs[2].gameObject.SetActive(true);
+            playerGameUIs[3].gameObject.SetActive(true);
         }
-        gameUIs[0].gameObject.SetActive(true);
+        playerGameUIs[0].gameObject.SetActive(true);
     }
 }

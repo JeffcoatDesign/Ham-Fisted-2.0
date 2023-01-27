@@ -37,6 +37,11 @@ public class PlayerController : MonoBehaviour
     private bool isGrounded;
     private int livesLeft;
 
+    public void LateInitialize(PlayerConfig player)
+    {
+        StartCoroutine(CallInitializeAfterSeconds(player));
+    }
+
     public void Initialize(PlayerConfig player)
     {
         dead = false;
@@ -124,12 +129,11 @@ public class PlayerController : MonoBehaviour
         //Debug.Log("Killed by: " + lastHitBy);
         if (lastHitBy > -1 && StatTracker.instance != null)
         {
-            StatTracker.instance.AddDeath(lastHitBy);
             if (lastHitBy != id)
-                GameManager.instance.GetPlayer(lastHitBy).AddKill(id);
+                GameManager.instance.GetPlayer(lastHitBy).AddKO(id);
             lastHitBy = id;
         }
-        CameraManager.instance.gameUIs[id].RemoveLife(id);
+        CameraManager.instance.playerGameUIs[id].RemoveLife(id);
         if (livesLeft <= 0)
             Die();
         if (dead)
@@ -147,17 +151,17 @@ public class PlayerController : MonoBehaviour
         vCam.GetCinemachineComponent<CinemachineOrbitalTransposer>().ForceCameraPosition(Vector3.zero, Quaternion.identity);
     }
 
-    public void AddKill (int index)
+    public void AddKO (int index)
     {
         kills++;
-        StatTracker.instance.AddKill(index);
+        StatTracker.instance.AddKO(id, index);
     }
 
     public void Die ()
     {
         dead = true;
         GameManager.instance.alivePlayers -= 1;
-        CameraManager.instance.gameUIs[id].RemoveIcon(id);
+        CameraManager.instance.playerGameUIs[id].RemoveIcon(id);
 
         ChangeFocusedPlayer();
         if (spectators.Count != 0)
@@ -169,6 +173,10 @@ public class PlayerController : MonoBehaviour
     void SetColor (int index)
     {
         Color color = colors[index];
+        if (CameraManager.instance != null)
+        {
+            CameraManager.instance.playerGameUIs[id].SetSliderColor(color);
+        }
         mat = Instantiate(mat);
         boxingGloveMat = Instantiate(boxingGloveMat);
         boxingGloveMat.color = color;
@@ -212,5 +220,11 @@ public class PlayerController : MonoBehaviour
         {
             spectator.Invoke("ChangeFocusedPlayer", 0.1f);
         }
+    }
+
+    IEnumerator CallInitializeAfterSeconds(PlayerConfig player)
+    {
+        yield return new WaitForEndOfFrame();
+        Initialize(player);
     }
 }

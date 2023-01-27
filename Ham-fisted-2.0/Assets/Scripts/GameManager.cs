@@ -43,10 +43,10 @@ public class GameManager : MonoBehaviour
         foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
         {
             players[pc.playerIndex] = pc.Player;
-            pc.Player.Initialize(pc);
+            pc.Player.LateInitialize(pc);
             alivePlayers++;
             playersInGame++;
-            cameraManager.gameUIs[pc.playerIndex].SpawnPlayerIcon(pc.playerIndex);
+            cameraManager.playerGameUIs[pc.playerIndex].SpawnPlayerIcon(pc.playerIndex);
             pc.Player.transform.position = spawnPoints[pc.playerIndex].transform.position;
         }
         StatTracker.instance.SetGamemode();
@@ -65,7 +65,7 @@ public class GameManager : MonoBehaviour
             TimerOver();
 
         foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
-            cameraManager.gameUIs[pc.playerIndex].SetTimerText(gameTime - currentTime);
+            cameraManager.playerGameUIs[pc.playerIndex].SetTimerText(gameTime - currentTime);
     }
 
     public PlayerController GetPlayer(int playerId)
@@ -99,7 +99,7 @@ public class GameManager : MonoBehaviour
             // Debug for testing on singleplayer Invoke("GoToStatsScreen", postGameTime);
             Invoke("GoBackToMenu", postGameTime);
             foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
-                cameraManager.gameUIs[pc.playerIndex].SetWinText("No one");
+                cameraManager.playerGameUIs[pc.playerIndex].SetWinText("No one");
         }
     }
 
@@ -125,11 +125,13 @@ public class GameManager : MonoBehaviour
 
     void WinGame(int winningPlayer)
     {
+        PlayerConfigManager.instance.EnableControls("Menu");
+        Cursor.lockState = CursorLockMode.Confined;
         // set the UI Win Text
         foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
-            cameraManager.gameUIs[pc.playerIndex].SetWinText(GetPlayer(winningPlayer).nickname);
+            cameraManager.playerGameUIs[pc.playerIndex].SetWinText(GetPlayer(winningPlayer).nickname);
 
-        Invoke("GoBackToMenu", postGameTime);
+        SummaryManager.instance.Invoke("ShowSummary", postGameTime);
     }
 
     void GoBackToMenu()

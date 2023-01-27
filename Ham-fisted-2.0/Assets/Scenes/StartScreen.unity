@@ -334,7 +334,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Connecting...
+  m_text: Loading...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 471cf95fcac88a444bb973112177ae5b, type: 2}
   m_sharedMaterial: {fileID: 234606578579266761, guid: 471cf95fcac88a444bb973112177ae5b, type: 2}
@@ -562,7 +562,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 373.316, y: 373.316}
+  m_SizeDelta: {x: 209.7484, y: 209.7484}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1513691355
 MonoBehaviour:
@@ -692,7 +692,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}
