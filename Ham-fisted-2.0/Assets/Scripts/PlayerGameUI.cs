@@ -61,6 +61,11 @@ public class PlayerGameUI : MonoBehaviour
             seconds = 0;
             minutes++;
         }
+        if (minutes < 0)
+        {
+            minutes = 0;
+            seconds = 0;
+        }
         timerText.text = minutes.ToString("F0") + ":" + seconds.ToString("00");
     }
 
@@ -69,7 +74,7 @@ public class PlayerGameUI : MonoBehaviour
         while (chargeSlider.value != currentChargeValue)
         {
             chargeSlider.value = Mathf.Lerp(chargeSlider.value, currentChargeValue, 0.01f);
-            yield return new WaitForSeconds(0.001f);
+            yield return new WaitForEndOfFrame();
         }
         yield return null;
     }

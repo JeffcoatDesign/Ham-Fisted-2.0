@@ -577,7 +577,7 @@ MonoBehaviour:
   swingLength: 2
   springCompressScale: 0.5
   isAttacking: 0
-  chargeAmount: 0.01
+  chargeAmount: 0.002
 --- !u!1 &2681180787901976656
 GameObject:
   m_ObjectHideFlags: 0

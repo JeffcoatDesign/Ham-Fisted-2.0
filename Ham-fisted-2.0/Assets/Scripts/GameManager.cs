@@ -92,6 +92,8 @@ public class GameManager : MonoBehaviour
 
     public void CheckWinCondition()
     {
+        if (!gameRunning)
+            return;
         if (alivePlayers == 1)
             WinGame(players.First(x => !x.dead).id);
         else if (alivePlayers < 1)
@@ -125,6 +127,7 @@ public class GameManager : MonoBehaviour
 
     void WinGame(int winningPlayer)
     {
+        gameRunning = false;
         PlayerConfigManager.instance.EnableControls("Menu");
         Cursor.lockState = CursorLockMode.Confined;
         // set the UI Win Text

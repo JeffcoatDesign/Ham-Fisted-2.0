@@ -70,10 +70,12 @@ public class BoxingGloveController : MonoBehaviour
         {
             total = Quaternion.Euler(0, Mathf.LerpAngle(cr, tr, Time.deltaTime * speed), 0);
             transform.rotation = total;
-            if (total.eulerAngles.y > cr)
-                charge = Mathf.Clamp(charge - chargeAmount, -1, 1);
-            if (total.eulerAngles.y < cr)
-                charge = Mathf.Clamp(charge + chargeAmount, -1, 1);
+            if (charge < 1 && charge > -1) {
+                if (total.eulerAngles.y > cr - 1)
+                    charge = Mathf.Clamp(charge - chargeAmount, -1, 1);
+                if (total.eulerAngles.y < cr + 1)
+                    charge = Mathf.Clamp(charge + chargeAmount, -1, 1);
+            }
             if(CameraManager.instance != null)
                 CameraManager.instance.playerGameUIs[playerController.id].UpdateSliderValue(Mathf.Abs(charge));
         }
@@ -85,6 +87,12 @@ public class BoxingGloveController : MonoBehaviour
         {
             StartCoroutine(Attack());
         }
+    }
+
+    public void ClearCharge ()
+    {
+        charge = 0;
+        CameraManager.instance.playerGameUIs[playerController.id].UpdateSliderValue(Mathf.Abs(charge));
     }
 
     IEnumerator Attack()

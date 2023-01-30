@@ -114,12 +114,12 @@ public class PlayerController : MonoBehaviour
         return flatten * input;
     }
 
-    public void GetHit(Vector3 attackerPos, float force, int attackerID)
+    public void GetHit(Vector3 forward, float force, int attackerID)
     {
         lastHitTime = Time.time;
         lastHitBy = attackerID;
         //Debug.Log("Getting Hit by: " + attackerID);
-        Vector3 launchDir = transform.position - attackerPos;
+        Vector3 launchDir = (forward).normalized;
         rig.AddForce(launchDir * force, ForceMode.Impulse);
     }
 
@@ -127,11 +127,16 @@ public class PlayerController : MonoBehaviour
     {
         livesLeft -= 1;
         //Debug.Log("Killed by: " + lastHitBy);
-        if (lastHitBy > -1 && StatTracker.instance != null)
+        if (StatTracker.instance != null)
         {
-            if (lastHitBy != id)
-                GameManager.instance.GetPlayer(lastHitBy).AddKO(id);
-            lastHitBy = id;
+            if (lastHitBy > -1)
+            {
+                if (lastHitBy != id)
+                    GameManager.instance.GetPlayer(lastHitBy).AddKO(id);
+                else
+                    StatTracker.instance.AddSD(id);
+                lastHitBy = id;
+            }
         }
         CameraManager.instance.playerGameUIs[id].RemoveLife(id);
         if (livesLeft <= 0)
@@ -139,6 +144,7 @@ public class PlayerController : MonoBehaviour
         if (dead)
             return;
         rig.velocity = Vector3.zero;
+        boxingGloveController.ClearCharge();
         GetRespawnPoint();
     }
 

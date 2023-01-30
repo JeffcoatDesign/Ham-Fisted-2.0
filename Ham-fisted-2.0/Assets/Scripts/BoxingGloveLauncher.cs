@@ -17,7 +17,7 @@ public class BoxingGloveLauncher : MonoBehaviour
             return;
         if (other.gameObject.CompareTag("Player"))
         {
-            other.gameObject.GetComponent<PlayerController>().GetHit(transform.position, force + (charge * chargeMult), id);
+            other.gameObject.GetComponent<PlayerController>().GetHit(transform.forward, force + (charge * chargeMult), id);
             hittingPlayer = true;
         }
     }

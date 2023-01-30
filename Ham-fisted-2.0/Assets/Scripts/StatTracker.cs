@@ -15,6 +15,7 @@ public class StatTracker : MonoBehaviour
     #endregion
 
     public Vector2[] kos { get; private set; }
+    public List<int> sds;
     
     public float time;
     [HideInInspector] public string gamemode;
@@ -37,5 +38,10 @@ public class StatTracker : MonoBehaviour
             tempList = new();
         tempList.Add(new(hitter, fell));
         kos = tempList.ToArray();
+    }
+
+    public void AddSD (int player)
+    {
+        sds.Add(player);
     }
 }

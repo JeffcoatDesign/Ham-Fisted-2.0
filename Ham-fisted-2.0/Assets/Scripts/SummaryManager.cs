@@ -39,8 +39,15 @@ public class SummaryManager : MonoBehaviour
         {
             foreach (Vector2 pair in statTracker.kos)
             {
-                SpawnStatsIcon((int)pair.y, (int)pair.x, "ko");
-                SpawnStatsIcon((int)pair.x, (int)pair.y, "fell");
+                SpawnStatsIcon((int)pair.x, (int)pair.y, "ko");
+                SpawnStatsIcon((int)pair.y, (int)pair.x, "fell");
+            }
+        }
+        if(statTracker.sds != null)
+        {
+            foreach (int player in statTracker.sds)
+            {
+                SpawnStatsIcon(player, player, "fell");
             }
         }
     }
