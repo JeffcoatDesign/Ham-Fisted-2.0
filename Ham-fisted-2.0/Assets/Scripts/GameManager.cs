@@ -38,7 +38,6 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         cameraManager = gameObject.GetComponent<CameraManager>();
-        ShuffleSpawnPoints();
         players = new PlayerController[PlayerConfigManager.instance.playerConfigs.Count];
         foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
         {
@@ -47,7 +46,10 @@ public class GameManager : MonoBehaviour
             alivePlayers++;
             playersInGame++;
             cameraManager.playerGameUIs[pc.playerIndex].SpawnPlayerIcon(pc.playerIndex);
-            pc.Player.transform.position = spawnPoints[pc.playerIndex].transform.position;
+            SpawnPoint sp = spawnPoints.First(sp => !sp.isCollidingWithPlayer);
+            pc.Player.transform.position = sp.transform.position;
+            sp.isCollidingWithPlayer = true;
+            ShuffleSpawnPoints();
         }
         StatTracker.instance.SetGamemode();
         Cursor.lockState = CursorLockMode.Locked;
