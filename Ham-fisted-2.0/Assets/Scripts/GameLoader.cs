@@ -13,6 +13,6 @@ public class GameLoader : MonoBehaviour
 
     private void Start()
     {
-        Invoke("Load", 3f);
+        Invoke("Load", 1f);
     }
 }

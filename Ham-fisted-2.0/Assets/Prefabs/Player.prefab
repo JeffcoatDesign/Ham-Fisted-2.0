@@ -577,7 +577,7 @@ MonoBehaviour:
   swingLength: 2
   springCompressScale: 0.5
   isAttacking: 0
-  chargeAmount: 0.002
+  chargeAmount: 0.005
 --- !u!1 &2681180787901976656
 GameObject:
   m_ObjectHideFlags: 0
@@ -1489,6 +1489,14 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 46d95020-b6c0-4efe-9a38-4f231ff4270c
     m_ActionName: Menu/Cancel[/Keyboard/escape,/XInputControllerWindows/buttonEast]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: e0e33a10-ce90-44b1-8385-df92193a1be7
+    m_ActionName: Menu/Pointer[/Mouse/position]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 185fec42-3a91-4e91-a3e9-80ad934a98d9
+    m_ActionName: Menu/Left Click[/Mouse/leftButton]
   m_NeverAutoSwitchControlSchemes: 1
   m_DefaultControlScheme: 
   m_DefaultActionMap: Menu

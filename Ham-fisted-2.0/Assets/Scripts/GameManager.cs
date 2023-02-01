@@ -51,6 +51,7 @@ public class GameManager : MonoBehaviour
             sp.isCollidingWithPlayer = true;
             ShuffleSpawnPoints();
         }
+        GUIManager.instance.SetMinimap(alivePlayers);
         StatTracker.instance.SetGamemode();
         Cursor.lockState = CursorLockMode.Locked;
         cameraManager.Initiate(playersInGame);
@@ -67,7 +68,7 @@ public class GameManager : MonoBehaviour
             TimerOver();
 
         foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
-            cameraManager.playerGameUIs[pc.playerIndex].SetTimerText(gameTime - currentTime);
+            GUIManager.instance.SetTimerText(gameTime - currentTime);
     }
 
     public PlayerController GetPlayer(int playerId)
