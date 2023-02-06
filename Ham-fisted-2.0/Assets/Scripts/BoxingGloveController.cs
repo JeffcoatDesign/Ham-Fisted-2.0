@@ -73,7 +73,7 @@ public class BoxingGloveController : MonoBehaviour
             if (tr > cr + 22 || tr < cr - 22) {
                 charge = Mathf.Clamp(charge + chargeAmount, 0, 1);
             }
-            if(CameraManager.instance != null)
+            if (CameraManager.instance != null)
                 CameraManager.instance.playerGameUIs[playerController.id].UpdateSliderValue(Mathf.Abs(charge));
         }
     }
@@ -88,6 +88,7 @@ public class BoxingGloveController : MonoBehaviour
 
     public void ClearCharge ()
     {
+        bGL.ToggleCollider(false);
         charge = 0;
         CameraManager.instance.playerGameUIs[playerController.id].UpdateSliderValue(Mathf.Abs(charge));
     }
@@ -96,7 +97,7 @@ public class BoxingGloveController : MonoBehaviour
     {
         float attackCharge = Mathf.Abs(charge);
         isAttacking = true;
-        bGL.canHit = true;
+        bGL.ToggleCollider(true);
         bGL.charge = attackCharge;
         punchStartTime = Time.time;
         float time = Time.time - punchStartTime;
@@ -115,11 +116,18 @@ public class BoxingGloveController : MonoBehaviour
         }
         springTransform.localScale = new Vector3(1, 1, springCompressScale);
         isAttacking = false;
-        bGL.canHit = false;
+        bGL.ToggleCollider(false);
         bGL.charge = 0;
         charge = 0;
         if(CameraManager.instance != null)
             CameraManager.instance.playerGameUIs[playerController.id].UpdateSliderValue(Mathf.Abs(charge));
         yield return null;
+    }
+
+    public void SetBoxingGloveSize (float size)
+    {
+        Debug.Log(size);
+        Vector3 scale = new(.66f + size, .66f + size, .66f + size);
+        bGL.transform.parent.parent.localScale = scale;
     }
 }

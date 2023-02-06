@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using System.Linq;
-//https://www.youtube.com/watch?v=_5pOiYHJgl0
+
 public class PlayerConfigManager : MonoBehaviour
 {
     public PlayerInputManager pIM;

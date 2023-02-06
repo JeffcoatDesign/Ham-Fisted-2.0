@@ -5,16 +5,20 @@ using UnityEngine;
 public class BoxingGloveLauncher : MonoBehaviour
 {
     public int id;
-    public bool canHit = false;
     public float force;
     public float charge = 0;
+    [SerializeField] private Collider boxingGloveCollider;
     [SerializeField] private GameObject impact;
     [SerializeField] private float chargeMult = 1f;
     private bool hittingPlayer = false;
-    private void OnTriggerStay(Collider other)
+
+    public void ToggleCollider (bool enabled)
     {
-        if (!canHit)
-            return;
+        boxingGloveCollider.enabled = enabled;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
         if (other.gameObject.CompareTag("Player"))
         {
             other.gameObject.GetComponent<PlayerController>().GetHit(transform.forward, force + (charge * chargeMult), id);

@@ -309,7 +309,6 @@ MonoBehaviour:
   livesRow: {fileID: 1282874930836394818}
   playerIconPrefab: {fileID: 1831831008158933039, guid: 069f3f74cc8d7c044b19d42fe416c134, type: 3}
   winText: {fileID: 1282874930143030794}
-  timerText: {fileID: 0}
   sliderFill: {fileID: 5581392055459667910}
   chargeSlider: {fileID: 8065617565475648182}
 --- !u!223 &1282874929258014612
@@ -345,7 +344,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
   m_ReferenceResolution: {x: 800, y: 600}

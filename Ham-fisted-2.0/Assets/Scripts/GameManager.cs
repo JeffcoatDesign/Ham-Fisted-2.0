@@ -98,7 +98,9 @@ public class GameManager : MonoBehaviour
         if (!gameRunning)
             return;
         if (alivePlayers == 1)
-            WinGame(players.First(x => !x.dead).id);
+        {
+            WinGame(players.First(p => !p.dead).id);
+        }
         else if (alivePlayers < 1)
         {
             // Debug for testing on singleplayer Invoke("GoToStatsScreen", postGameTime);
@@ -124,8 +126,9 @@ public class GameManager : MonoBehaviour
     void TimerOver ()
     {
         gameRunning = false;
-        players = players.OrderBy(p => p.kills).ThenBy(p => p.kills).ToArray();
-        WinGame(players.First(x => !x.dead).id);
+        PlayerController[] rankedPlayers = players;
+        rankedPlayers.OrderByDescending(p => p.kills).ThenByDescending(p => p.livesLeft);
+        WinGame(rankedPlayers.First(x => !x.dead).id);
     }
 
     void WinGame(int winningPlayer)

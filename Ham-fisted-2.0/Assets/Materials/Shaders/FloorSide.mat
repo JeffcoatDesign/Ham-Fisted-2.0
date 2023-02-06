@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: FloorSide
+  m_Name: Floorside
   m_Shader: {fileID: -6465566751694194690, guid: 205af4e5859e64c448d73ad2e0899c79, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
@@ -89,7 +89,7 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _EnvironmentReflections: 1
-    - _Freq: 34.21
+    - _Freq: 4.58
     - _GlossMapScale: 1
     - _Glossiness: 0
     - _GlossyReflections: 1

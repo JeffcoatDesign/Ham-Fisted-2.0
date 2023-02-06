@@ -9,7 +9,6 @@ public class PlayerGameUI : MonoBehaviour
     [SerializeField] private Transform livesRow;
     [SerializeField] private GameObject playerIconPrefab;
     [SerializeField] private TextMeshProUGUI winText;
-    [SerializeField] private TextMeshProUGUI timerText;
     [SerializeField] private Image sliderFill;
     [SerializeField] private Slider chargeSlider;
     private float currentChargeValue;
@@ -50,23 +49,6 @@ public class PlayerGameUI : MonoBehaviour
     {
         winText.gameObject.SetActive(true);
         winText.text = text + " is the Champion";
-    }
-
-    public void SetTimerText (float time)
-    {
-        float minutes = Mathf.Floor(time / 60);
-        float seconds = Mathf.RoundToInt(time % 60);
-        if (seconds == 60)
-        {
-            seconds = 0;
-            minutes++;
-        }
-        if (minutes < 0)
-        {
-            minutes = 0;
-            seconds = 0;
-        }
-        timerText.text = minutes.ToString("F0") + ":" + seconds.ToString("00");
     }
 
     IEnumerator LerpSlider ()

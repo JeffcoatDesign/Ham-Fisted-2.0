@@ -987,7 +987,7 @@ MonoBehaviour:
   postGameTime: 5
   playersRespawn: 1
   playerLives: 4
-  fallY: -10
+  fallY: -2
   gameRunning: 0
   spawnPoints: []
   playerPrefabLoc: Player
@@ -3755,7 +3755,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0.1764706}
+  m_BackGroundColor: {r: 0, g: 0, b: 0, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -3770,9 +3770,9 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 32.9474
-  orthographic: 0
-  orthographic size: 24.02
+  field of view: 20.528326
+  orthographic: 1
+  orthographic size: 49.04432
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2

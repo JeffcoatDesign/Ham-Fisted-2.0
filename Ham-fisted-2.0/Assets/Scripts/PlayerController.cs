@@ -25,17 +25,44 @@ public class PlayerController : MonoBehaviour
     public BoxingGloveController boxingGloveController;
     public Color[] colors;
 
+    [Header("Camera Shake")]
+    [SerializeField] private float lurchThreshhold = 85.5f;
+    [SerializeField] private float lurchShakeTime = 0.5f;
+    [SerializeField] private float lurchShakeIntensity = 1.0f;
+    [SerializeField] private float hitShakeTime = 1.0f;
+    [SerializeField] private float hitShakeIntensity = 2.0f;
+    private bool isShaking = false;
+
+    [Header("Falling")]
+    [SerializeField] private float fallTime = 2.0f;
+    [SerializeField] private float fallOffsetAmount = 0.05f;
+
+    [Header("Smoke Trail")]
+    [SerializeField] private Transform smokeTrailPivot;
+    [SerializeField] private float smokeTrailTime;
+    [SerializeField] private ParticleSystemController smokeSystem;
+
+    private CinemachineOrbitalTransposer vCamCOT;
+    private Vector3 vCamOffset;
     private Vector2 movementInput;
     private float lastHitTime;
     private int lastHitBy;
     private List<PlayerController> spectators = new();
     private PlayerController spectateTarget;
+    private float oldVelocity = 0;
 
-    [HideInInspector] public PlayerConfig playerConfig;
+    public PlayerConfig playerConfig;
     [HideInInspector] public int kills = 0;
 
     private bool isGrounded;
-    private int livesLeft;
+    private bool isFallingOut = false;
+    [HideInInspector] public int livesLeft;
+
+    private void Start()
+    {
+        vCamCOT = vCam.GetCinemachineComponent<CinemachineOrbitalTransposer>();
+        vCamOffset = vCamCOT.m_FollowOffset;
+    }
 
     public void LateInitialize(PlayerConfig player)
     {
@@ -76,15 +103,17 @@ public class PlayerController : MonoBehaviour
 
     void FixedUpdate()
     {
+        smokeTrailPivot.position = transform.position;
         if (!inGameScene || dead)
             return;
         CheckGround();
+        CheckVelocity();
         if (isGrounded && Time.time - lastHitTime > hitCreditTime)
             lastHitBy = id;
         //Vector3 camForward = cameraTransform.right;
         //Vector3 camHorizontal = cameraTransform.forward;
 
-        Vector3 controllerInput = new Vector3 (movementInput.x * speed, 0 , movementInput.y * speed);
+        Vector3 controllerInput = new Vector3(movementInput.x * speed, 0, movementInput.y * speed);
 
         Vector3 moveDirection = FlattenCameraInput(controllerInput);
 
@@ -94,12 +123,22 @@ public class PlayerController : MonoBehaviour
         //rig.velocity = Vector3.ClampMagnitude(rig.velocity, 20f);
 
         if (transform.position.y < GameManager.instance.fallY)
-            Respawn();
+            StartCoroutine(Fall());
     }
 
     public void OnMove(InputAction.CallbackContext ctx) => movementInput = ctx.ReadValue<Vector2>();
 
-    void CheckGround ()
+    void CheckVelocity()
+    {
+        if (oldVelocity - rig.velocity.sqrMagnitude > lurchThreshhold)
+        {
+            StartCoroutine(ShakeCamera(lurchShakeIntensity, lurchShakeTime));
+        }
+
+        oldVelocity = rig.velocity.sqrMagnitude;
+    }
+
+    void CheckGround()
     {
         Ray ray = new Ray(transform.position, Vector3.down);
         if (Physics.Raycast(ray, 1.1f))
@@ -108,7 +147,7 @@ public class PlayerController : MonoBehaviour
             isGrounded = false;
     }
 
-    Vector3 FlattenCameraInput (Vector3 input)
+    Vector3 FlattenCameraInput(Vector3 input)
     {
         Quaternion flatten = Quaternion.LookRotation(-Vector3.up, vCam.transform.forward) * Quaternion.Euler(-90f, 0, 0);
         return flatten * input;
@@ -118,37 +157,26 @@ public class PlayerController : MonoBehaviour
     {
         lastHitTime = Time.time;
         lastHitBy = attackerID;
-        //Debug.Log("Getting Hit by: " + attackerID);
+        StartCoroutine(ShakeCamera(hitShakeIntensity, hitShakeTime));
+        StartCoroutine(StartSmokeTrail(forward));
         Vector3 launchDir = (forward).normalized;
         rig.AddForce(launchDir * force, ForceMode.Impulse);
     }
 
-    void Respawn ()
+    void Respawn()
     {
-        livesLeft -= 1;
-        //Debug.Log("Killed by: " + lastHitBy);
-        if (StatTracker.instance != null)
-        {
-            if (lastHitBy > -1)
-            {
-                if (lastHitBy != id)
-                    GameManager.instance.GetPlayer(lastHitBy).AddKO(id);
-                else
-                    StatTracker.instance.AddSD(id);
-                lastHitBy = id;
-            }
-        }
-        CameraManager.instance.playerGameUIs[id].RemoveLife(id);
+        vCamCOT.m_FollowOffset = vCamOffset;
         if (livesLeft <= 0)
             Die();
         if (dead)
             return;
         rig.velocity = Vector3.zero;
+        oldVelocity = rig.velocity.sqrMagnitude;
         boxingGloveController.ClearCharge();
         GetRespawnPoint();
     }
 
-    void GetRespawnPoint ()
+    void GetRespawnPoint()
     {
         GameManager.instance.ShuffleSpawnPoints();
         Transform target = GameManager.instance.spawnPoints.First(x => !x.isCollidingWithPlayer).transform;
@@ -157,13 +185,13 @@ public class PlayerController : MonoBehaviour
         vCam.GetCinemachineComponent<CinemachineOrbitalTransposer>().ForceCameraPosition(Vector3.zero, Quaternion.identity);
     }
 
-    public void AddKO (int index)
+    public void AddKO(int index)
     {
         kills++;
         StatTracker.instance.AddKO(id, index);
     }
 
-    public void Die ()
+    public void Die()
     {
         dead = true;
         GameManager.instance.alivePlayers -= 1;
@@ -176,7 +204,7 @@ public class PlayerController : MonoBehaviour
         GameManager.instance.CheckWinCondition();
     }
 
-    void SetColor (int index)
+    void SetColor(int index)
     {
         Color color = colors[index];
         if (CameraManager.instance != null)
@@ -198,7 +226,7 @@ public class PlayerController : MonoBehaviour
     {
         if (GameManager.instance.alivePlayers <= 0)
             return;
-        
+
         if (spectateTarget != null)
             spectateTarget.RemoveSpectator(id);
 
@@ -213,7 +241,7 @@ public class PlayerController : MonoBehaviour
         spectators.Add(GameManager.instance.players.First(p => p.playerConfig.playerIndex == actorNumber));
     }
 
-    public void RemoveSpectator (int actorNumber)
+    public void RemoveSpectator(int actorNumber)
     {
         spectators.Remove(spectators.First(p => p.playerConfig.playerIndex == actorNumber));
     }
@@ -228,9 +256,68 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    IEnumerator Fall ()
+    {
+        if(!isFallingOut)
+        {
+            livesLeft -= 1;
+            //Debug.Log("Killed by: " + lastHitBy);
+            if (StatTracker.instance != null)
+            {
+                if (lastHitBy > -1)
+                {
+                    if (lastHitBy != id)
+                        GameManager.instance.GetPlayer(lastHitBy).AddKO(id);
+                    else
+                        StatTracker.instance.AddSD(id);
+                    lastHitBy = id;
+                }
+            }
+            CameraManager.instance.playerGameUIs[id].RemoveLife(id);
+
+            float fallStartTime = Time.time;
+            isFallingOut = true;
+            while(Time.time - fallStartTime < fallTime)
+            {
+                vCamCOT.m_FollowOffset += new Vector3(0, fallOffsetAmount, 0);
+                yield return null;
+            }
+            isFallingOut = false;
+            Respawn();
+        }
+
+        yield return null;
+    }
+
     IEnumerator CallInitializeAfterSeconds(PlayerConfig player)
     {
         yield return new WaitForEndOfFrame();
         Initialize(player);
+    }
+
+    IEnumerator ShakeCamera(float intensity, float shakeTime)
+    {
+        if (!isShaking)
+        {
+            CinemachineBasicMultiChannelPerlin vCamNoise = vCam.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+            float startShakeTime = Time.time;
+            isShaking = true;
+            vCamNoise.m_AmplitudeGain = intensity;
+            yield return new WaitForSeconds(shakeTime);
+            vCamNoise.m_AmplitudeGain = 0.0f;
+            isShaking = false;
+        }
+        yield return null;
+    }
+
+    IEnumerator StartSmokeTrail (Vector3 dir)
+    {
+        Quaternion rot = Quaternion.LookRotation(dir, Vector3.up);
+        smokeTrailPivot.rotation = rot;
+        yield return new WaitForSeconds(0.1f);
+        smokeSystem.ToggleParticles(true);
+        yield return new WaitForSeconds(smokeTrailTime);
+        smokeSystem.ToggleParticles(false);
+        yield return null;
     }
 }
