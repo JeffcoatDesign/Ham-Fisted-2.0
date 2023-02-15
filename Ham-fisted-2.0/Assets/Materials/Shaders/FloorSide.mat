@@ -107,7 +107,7 @@ Material:
     - _SrcBlend: 1
     - _Surface: 0
     - _Threshold: 0.14
-    - _Tightening: 7.05
+    - _Tightening: 63.82
     - _TileScale: 2.77
     - _UVSec: 0
     - _WorkflowMode: 1

@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Shield
+  - CameraIgnore
   layers:
   - Default
   - TransparentFX
@@ -15,8 +17,8 @@ TagManager:
   - P2 CAM
   - P3 CAM
   - P4 CAM
-  - 
-  - 
+  - PODIUM CAM
+  - HideFromMinimap
   - 
   - 
   - 

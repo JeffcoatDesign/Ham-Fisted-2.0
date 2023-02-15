@@ -20,7 +20,15 @@ public class BoxingGloveController : MonoBehaviour
     public float springCompressScale = 0.5f;
 
     public bool isAttacking = false;
+    public bool isBlocking = false;
+    public bool wasBlocked = false;
     [SerializeField] private float chargeAmount = 0.01f;
+
+    [Header("Shield")]
+    [SerializeField] private GameObject shieldObj;
+    [SerializeField] private float shieldStunTime;
+    [SerializeField] private float shieldDrainAmount = 0.5f;
+    public float ShieldStunTime { get { return shieldStunTime; } }
     private float charge = 0;
     private float punchStartTime;
     private Vector2 movementInput;
@@ -38,6 +46,21 @@ public class BoxingGloveController : MonoBehaviour
             RotateTo(FlattenInput(controllerInput));
 
         transform.position = ballTransform.position;
+
+        shieldObj.SetActive(isBlocking);
+    }
+
+    private void FixedUpdate()
+    {
+        if (isBlocking && !playerController.IsStunned)
+        {
+            charge -= Time.deltaTime * shieldDrainAmount;
+            charge = Mathf.Clamp(charge, 0, 1);
+            if (CameraManager.instance != null)
+                CameraManager.instance.playerGameUIs[playerController.id].UpdateSliderValue(Mathf.Abs(charge));
+        }
+        if (charge <= 0)
+            isBlocking = false;
     }
 
     public void OnMove(InputAction.CallbackContext ctx) => movementInput = ctx.ReadValue<Vector2>();
@@ -80,10 +103,24 @@ public class BoxingGloveController : MonoBehaviour
 
     public void TryAttack ()
     {
-        if (!isAttacking)
+        if (!isAttacking && !playerController.IsStunned)
         {
+            if (isBlocking)
+                isBlocking = false;
             StartCoroutine(Attack());
         }
+    }
+
+    public void ShieldPressed (InputAction.CallbackContext context)
+    {
+        if (playerController.IsStunned)
+            return;
+        if (context.performed && charge > 0 && !isBlocking)
+            isBlocking = true;
+        else if (context.ReadValueAsButton())
+            isBlocking = false;
+        else
+            isBlocking = false;
     }
 
     public void ClearCharge ()
@@ -97,23 +134,28 @@ public class BoxingGloveController : MonoBehaviour
     {
         float attackCharge = Mathf.Abs(charge);
         isAttacking = true;
-        bGL.ToggleCollider(true);
+        bGL.wasBlockChecked = false;
+        bGL.ToggleCollider(!wasBlocked);
         bGL.charge = attackCharge;
         punchStartTime = Time.time;
         float time = Time.time - punchStartTime;
-        yield return null;
+        yield return new WaitForEndOfFrame();
+        bGL.wasBlockChecked = true;
         while (time <= punchTime * punchRatio)
         {
             time = Time.time - punchStartTime;
-            springTransform.localScale = new Vector3(1, 1, springCompressScale + swingLength * (time / (punchTime * punchRatio)));
-            yield return null;
+            if (!wasBlocked)
+                springTransform.localScale = new Vector3(1, 1, springCompressScale + swingLength * (time / (punchTime * punchRatio)));
+            yield return new WaitForEndOfFrame();
         }
         while (time <= punchTime)
         {
+            bGL.ToggleCollider(!wasBlocked);
             time = Time.time - punchStartTime;
             springTransform.localScale = new Vector3(1, 1, springCompressScale + swingLength * (1 - ((time - (punchTime * punchRatio)) / (punchTime * (1 - punchRatio)))));
             yield return null;
         }
+        wasBlocked = false;
         springTransform.localScale = new Vector3(1, 1, springCompressScale);
         isAttacking = false;
         bGL.ToggleCollider(false);

@@ -30,9 +30,9 @@ public class CameraManager : MonoBehaviour
         {
             p1Cam.rect = new Rect(0, 0.5f, 0.5f, 0.5f);
             p2Cam.rect = new Rect(0.5f, 0.5f, 0.5f, 0.5f);
-            p3Cam.rect = new Rect(0.25f, 0, 0.5f, 0.5f);
             p2Cam.gameObject.SetActive(true);
             p3Cam.gameObject.SetActive(true);
+            p4Cam.gameObject.SetActive(true);
             playerGameUIs[0].gameObject.SetActive(true);
             playerGameUIs[1].gameObject.SetActive(true);
             playerGameUIs[2].gameObject.SetActive(true);

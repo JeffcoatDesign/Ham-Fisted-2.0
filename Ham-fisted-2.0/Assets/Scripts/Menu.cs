@@ -106,7 +106,7 @@ public class Menu : MonoBehaviour
 
     public void OnPlayerOneJoined ()
     {
-        StartCoroutine("WaitToStart");
+        StartCoroutine(WaitToStart());
     }
 
     public void OnPlayerJoined ()

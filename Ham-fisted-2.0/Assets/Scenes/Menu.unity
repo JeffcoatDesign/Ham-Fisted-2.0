@@ -8183,9 +8183,9 @@ MonoBehaviour:
   centerObj: {fileID: 2181313717454567703}
   spawnedObjectPrefab: {fileID: 30388237389642102, guid: 3168e9d1019a07941be13a759c00de0e, type: 3}
   options:
+  - {fileID: 11400000, guid: 61cbd1f1778c4d948ac2da9a73d19198, type: 2}
   - {fileID: 11400000, guid: f784ec1a1f2a57c4f9c2af7ca83a6002, type: 2}
   - {fileID: 11400000, guid: 08a9b66b7577425448a28c470a9bdf71, type: 2}
-  - {fileID: 11400000, guid: 61cbd1f1778c4d948ac2da9a73d19198, type: 2}
   - {fileID: 11400000, guid: 9f2158332f666a549b2b073161bf0e1d, type: 2}
   index: 0
   leftBtn: {fileID: 3728991210636767253}

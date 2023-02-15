@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 using System.Linq;
 
@@ -28,11 +29,15 @@ public class GameManager : MonoBehaviour
 
     private CameraManager cameraManager;
 
+    public UnityEvent onGameEnd;
+
     public static GameManager instance;
 
     void Awake()
     {
         instance = this;
+        if (onGameEnd == null)
+            onGameEnd = new UnityEvent();
     }
 
     private void Start()
@@ -47,11 +52,11 @@ public class GameManager : MonoBehaviour
             playersInGame++;
             cameraManager.playerGameUIs[pc.playerIndex].SpawnPlayerIcon(pc.playerIndex);
             SpawnPoint sp = spawnPoints.First(sp => !sp.isCollidingWithPlayer);
-            pc.Player.transform.position = sp.transform.position;
+            pc.Player.SetLocation(sp.transform, false);
             sp.isCollidingWithPlayer = true;
             ShuffleSpawnPoints();
         }
-        GUIManager.instance.SetMinimap(alivePlayers);
+        GUIManager.Instance.SetMinimap(alivePlayers);
         StatTracker.instance.SetGamemode();
         Cursor.lockState = CursorLockMode.Locked;
         cameraManager.Initiate(playersInGame);
@@ -67,8 +72,8 @@ public class GameManager : MonoBehaviour
         if (gameTime - currentTime <= 0)
             TimerOver();
 
-        foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
-            GUIManager.instance.SetTimerText(gameTime - currentTime);
+        for (int i = 0; i < PlayerConfigManager.instance.playerConfigs.Count; i++)
+            GUIManager.Instance.SetTimerText(gameTime - currentTime);
     }
 
     public PlayerController GetPlayer(int playerId)
@@ -127,20 +132,19 @@ public class GameManager : MonoBehaviour
     {
         gameRunning = false;
         PlayerController[] rankedPlayers = players;
-        rankedPlayers.OrderByDescending(p => p.kills).ThenByDescending(p => p.livesLeft);
+        rankedPlayers = rankedPlayers.OrderByDescending(p => p.kills).ThenByDescending(p => p.livesLeft).ToArray();
         WinGame(rankedPlayers.First(x => !x.dead).id);
     }
 
     void WinGame(int winningPlayer)
     {
+        onGameEnd.Invoke();
         gameRunning = false;
         PlayerConfigManager.instance.EnableControls("Menu");
         Cursor.lockState = CursorLockMode.Confined;
         // set the UI Win Text
         foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
             cameraManager.playerGameUIs[pc.playerIndex].SetWinText(GetPlayer(winningPlayer).nickname);
-
-        SummaryManager.instance.Invoke("ShowSummary", postGameTime);
     }
 
     void GoBackToMenu()

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
 
@@ -10,11 +11,13 @@ public class GUIManager : MonoBehaviour
     [SerializeField] private Transform singleplayerAnchor;
     [SerializeField] private Transform multiplayerAnchor;
     [SerializeField] private TextMeshProUGUI timerText;
+    [SerializeField] private GameObject winScreen;
+    [SerializeField] private Button homeButton;
 
-    public static GUIManager instance { get; private set; }
+    public static GUIManager Instance { get; private set; }
     public void Awake()
     {
-        instance = this;
+        Instance = this;
     }
 
     public void SetMinimap(int numPlayers)
@@ -41,8 +44,21 @@ public class GUIManager : MonoBehaviour
         timerText.text = minutes.ToString("F0") + ":" + seconds.ToString("00");
     }
 
-    public void HideGUI() 
+    [ContextMenu("Show WinScreen")]
+    public void ShowWinScreen()
     {
-        minimap.gameObject.SetActive(false);
+        winScreen.SetActive(true);
+        homeButton.Select();
+        ToggleGUI(false);
+    }
+
+    public void ToggleGUI(bool enabled) 
+    {
+        minimap.gameObject.SetActive(enabled);
+    }
+
+    public void OnMenuButton ()
+    {
+        SceneManager.LoadScene("Menu");
     }
 }

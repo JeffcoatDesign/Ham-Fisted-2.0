@@ -100,7 +100,7 @@ public class PlayerConfigManager : MonoBehaviour
     [ContextMenu("Spawn Debug Character")]
     void SpawnDebugPlayer ()
     {
-        Gamepad gP = InputSystem.AddDevice<Gamepad>();
+        InputSystem.AddDevice<Gamepad>();
         pIM.JoinPlayer();
     }
 

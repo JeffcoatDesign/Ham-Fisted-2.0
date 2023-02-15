@@ -25,6 +25,8 @@ public class PlayerController : MonoBehaviour
     public BoxingGloveController boxingGloveController;
     public Color[] colors;
 
+    [SerializeField] private PlayerModel playerModel;
+
     [Header("Camera Shake")]
     [SerializeField] private float lurchThreshhold = 85.5f;
     [SerializeField] private float lurchShakeTime = 0.5f;
@@ -41,6 +43,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform smokeTrailPivot;
     [SerializeField] private float smokeTrailTime;
     [SerializeField] private ParticleSystemController smokeSystem;
+
+    [Header("Stun Stars")]
+    [SerializeField] private ParticleSystemController starsSystem;
+    private bool isStunned = false;
+    public bool IsStunned { get { return isStunned; } }
 
     private CinemachineOrbitalTransposer vCamCOT;
     private Vector3 vCamOffset;
@@ -62,6 +69,7 @@ public class PlayerController : MonoBehaviour
     {
         vCamCOT = vCam.GetCinemachineComponent<CinemachineOrbitalTransposer>();
         vCamOffset = vCamCOT.m_FollowOffset;
+        starsSystem.gameObject.SetActive(false);
     }
 
     public void LateInitialize(PlayerConfig player)
@@ -71,6 +79,8 @@ public class PlayerController : MonoBehaviour
 
     public void Initialize(PlayerConfig player)
     {
+        starsSystem.gameObject.SetActive(false);
+        isStunned = false;
         dead = false;
         playerConfig = player;
         id = playerConfig.playerIndex;
@@ -88,17 +98,6 @@ public class PlayerController : MonoBehaviour
         SetColor(id);
         nickname = "Player " + (id + 1);
         lastHitBy = id;
-
-        /*if (!photonView.IsMine)
-        {
-            rig.isKinematic = true;
-        }
-        else
-        {
-            nameTag.Hide();
-            GameUI.instance.SpawnPlayerIcon(GetPlayerIndex(id));
-            isLocalPlayer = true;
-        }*/
     }
 
     void FixedUpdate()
@@ -106,12 +105,17 @@ public class PlayerController : MonoBehaviour
         smokeTrailPivot.position = transform.position;
         if (!inGameScene || dead)
             return;
+
+        if (transform.position.y < GameManager.instance.fallY)
+            StartCoroutine(Fall());
+
+        if (isStunned)
+            return;
+
         CheckGround();
         CheckVelocity();
         if (isGrounded && Time.time - lastHitTime > hitCreditTime)
             lastHitBy = id;
-        //Vector3 camForward = cameraTransform.right;
-        //Vector3 camHorizontal = cameraTransform.forward;
 
         Vector3 controllerInput = new Vector3(movementInput.x * speed, 0, movementInput.y * speed);
 
@@ -119,11 +123,6 @@ public class PlayerController : MonoBehaviour
 
         if (isGrounded && controllerInput.magnitude != 0)
             rig.AddForce(moveDirection, ForceMode.Force);
-        //    rig.velocity += (camForward * x * Time.deltaTime) + (camHorizontal * z * Time.deltaTime);
-        //rig.velocity = Vector3.ClampMagnitude(rig.velocity, 20f);
-
-        if (transform.position.y < GameManager.instance.fallY)
-            StartCoroutine(Fall());
     }
 
     public void OnMove(InputAction.CallbackContext ctx) => movementInput = ctx.ReadValue<Vector2>();
@@ -140,7 +139,7 @@ public class PlayerController : MonoBehaviour
 
     void CheckGround()
     {
-        Ray ray = new Ray(transform.position, Vector3.down);
+        Ray ray = new (transform.position, Vector3.down);
         if (Physics.Raycast(ray, 1.1f))
             isGrounded = true;
         else
@@ -155,6 +154,9 @@ public class PlayerController : MonoBehaviour
 
     public void GetHit(Vector3 forward, float force, int attackerID)
     {
+        if (attackerID == id)
+            return;
+        isStunned = false;
         lastHitTime = Time.time;
         lastHitBy = attackerID;
         StartCoroutine(ShakeCamera(hitShakeIntensity, hitShakeTime));
@@ -165,6 +167,7 @@ public class PlayerController : MonoBehaviour
 
     void Respawn()
     {
+        isStunned = false;
         vCamCOT.m_FollowOffset = vCamOffset;
         if (livesLeft <= 0)
             Die();
@@ -179,10 +182,23 @@ public class PlayerController : MonoBehaviour
     void GetRespawnPoint()
     {
         GameManager.instance.ShuffleSpawnPoints();
-        Transform target = GameManager.instance.spawnPoints.First(x => !x.isCollidingWithPlayer).transform;
-        transform.position = target.position;
-        boxingGloveController.transform.rotation = target.rotation;
-        vCam.GetCinemachineComponent<CinemachineOrbitalTransposer>().ForceCameraPosition(Vector3.zero, Quaternion.identity);
+        SpawnPoint spawnPoint = GameManager.instance.spawnPoints.First(x => !x.isCollidingWithPlayer);
+        SetLocation(spawnPoint.transform, false);
+        spawnPoint.isCollidingWithPlayer = true;
+    }
+
+    public void SetLocation (Transform targetTransform, bool flipped)
+    {
+        float cRot = targetTransform.rotation.eulerAngles.y;
+        rig.velocity = Vector3.zero;
+        rig.angularVelocity = Vector3.zero;
+        transform.rotation = Quaternion.identity;
+        transform.position = targetTransform.position;
+        boxingGloveController.transform.rotation = Quaternion.Euler(0, cRot, 0);
+        playerModel.transform.rotation = Quaternion.Euler(0, cRot, 0);
+        if (flipped)
+            cRot += 180;
+        vCam.GetCinemachineComponent<CinemachineOrbitalTransposer>().m_XAxis.Value = cRot;
     }
 
     public void AddKO(int index)
@@ -246,6 +262,11 @@ public class PlayerController : MonoBehaviour
         spectators.Remove(spectators.First(p => p.playerConfig.playerIndex == actorNumber));
     }
 
+    public void StartStun()
+    {
+        StartCoroutine(Stun());
+    }
+
     void MoveSpectators()
     {
         if (spectators.Count == 0)
@@ -261,7 +282,6 @@ public class PlayerController : MonoBehaviour
         if(!isFallingOut)
         {
             livesLeft -= 1;
-            //Debug.Log("Killed by: " + lastHitBy);
             if (StatTracker.instance != null)
             {
                 if (lastHitBy > -1)
@@ -319,5 +339,19 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(smokeTrailTime);
         smokeSystem.ToggleParticles(false);
         yield return null;
+    }
+
+    IEnumerator Stun ()
+    {
+        if (!isStunned)
+        {
+            isStunned = true;
+            starsSystem.gameObject.SetActive(true);
+            starsSystem.ToggleParticles(true);
+            yield return new WaitForSeconds(boxingGloveController.ShieldStunTime);
+            isStunned = false;
+            starsSystem.gameObject.SetActive(false);
+            yield return null;
+        }
     }
 }
