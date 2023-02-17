@@ -106,8 +106,7 @@ public class PlayerConfigManager : MonoBehaviour
 
     void PositionInMenu(PlayerConfig pc)
     {
-        pc.Player.transform.position = menuPositions[pc.playerIndex].position;
-        pc.Player.transform.rotation = menuPositions[pc.playerIndex].rotation;
+        pc.Player.SetLocation(menuPositions[pc.playerIndex].transform, true);
     }
 }
 

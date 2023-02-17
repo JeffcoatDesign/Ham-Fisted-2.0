@@ -127,7 +127,8 @@ public class BoxingGloveController : MonoBehaviour
     {
         bGL.ToggleCollider(false);
         charge = 0;
-        CameraManager.instance.playerGameUIs[playerController.id].UpdateSliderValue(Mathf.Abs(charge));
+        if (CameraManager.instance != null)
+            CameraManager.instance.playerGameUIs[playerController.id].UpdateSliderValue(Mathf.Abs(charge));
     }
 
     IEnumerator Attack()

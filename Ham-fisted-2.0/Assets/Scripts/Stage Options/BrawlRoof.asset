@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6e1ef9659842224ea1bae5c9d13fcb0, type: 3}
   m_Name: BrawlRoof
   m_EditorClassIdentifier: 
-  sprite: {fileID: 21300000, guid: 1d3df8affb327174eb73b7894e3c01f4, type: 3}
+  sprite: {fileID: 21300000, guid: 3c8f47d0c05eee945b03035249803e10, type: 3}
   scene: Brawl Rooftop

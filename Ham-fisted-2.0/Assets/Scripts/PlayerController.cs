@@ -85,6 +85,7 @@ public class PlayerController : MonoBehaviour
         playerConfig = player;
         id = playerConfig.playerIndex;
         boxingGloveController.bGL.id = id;
+        boxingGloveController.ClearCharge();
         vCam.gameObject.GetComponent<CinemachineInputProvider>().PlayerIndex = id;
         vCam.gameObject.layer = 6 + id;
         vCam.m_Follow = transform;
