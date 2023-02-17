@@ -50,6 +50,17 @@ public class PlayerGameUI : MonoBehaviour
         winText.gameObject.SetActive(true);
         winText.text = text + " is the Champion";
     }
+    public void SetText(string text)
+    {
+        winText.gameObject.SetActive(true);
+        winText.text = text;
+    }
+
+    public void HideText()
+    {
+        winText.gameObject.SetActive(false);
+        winText.text = "";
+    }
 
     IEnumerator LerpSlider ()
     {

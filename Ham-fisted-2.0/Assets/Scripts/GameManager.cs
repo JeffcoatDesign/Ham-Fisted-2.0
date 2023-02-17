@@ -60,7 +60,7 @@ public class GameManager : MonoBehaviour
         StatTracker.instance.SetGamemode();
         Cursor.lockState = CursorLockMode.Locked;
         cameraManager.Initiate(playersInGame);
-        StartGame();
+        StartCoroutine(TimedStart());
     }
 
     private void FixedUpdate()
@@ -161,5 +161,31 @@ public class GameManager : MonoBehaviour
             spawnPoints[randomIndex] = spawnPoints[i];
             spawnPoints[i] = tempSP;
         }
+    }
+
+    IEnumerator TimedStart ()
+    {
+        foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
+        {
+            pc.Input.SwitchCurrentActionMap("Menu");
+        }
+        yield return null;
+        foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
+            cameraManager.playerGameUIs[pc.playerIndex].SetText("3");
+        yield return new WaitForSeconds(1f);
+        foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
+            cameraManager.playerGameUIs[pc.playerIndex].SetText("2");
+        yield return new WaitForSeconds(1f);
+        foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
+            cameraManager.playerGameUIs[pc.playerIndex].SetText("1");
+        yield return new WaitForSeconds(1f);
+
+        foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
+        {
+            cameraManager.playerGameUIs[pc.playerIndex].HideText();
+            pc.Input.SwitchCurrentActionMap("Game");
+        }
+        StartGame();
+        yield return null;
     }
 }
