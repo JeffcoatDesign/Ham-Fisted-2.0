@@ -40,11 +40,6 @@ public class BoxingGloveController : MonoBehaviour
 
     void Update()
     {
-        Vector3 controllerInput = new Vector3(0, FindAngle(movementInput), 0);
-
-        if (movementInput.x != 0 || movementInput.y != 0)
-            RotateTo(FlattenInput(controllerInput));
-
         transform.position = ballTransform.position;
 
         shieldObj.SetActive(isBlocking);
@@ -52,6 +47,11 @@ public class BoxingGloveController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        Vector3 controllerInput = new Vector3(0, FindAngle(movementInput), 0);
+
+        if (movementInput.x != 0 || movementInput.y != 0)
+            RotateTo(FlattenInput(controllerInput));
+
         if (isBlocking && !playerController.IsStunned)
         {
             charge -= Time.deltaTime * shieldDrainAmount;
@@ -127,6 +127,7 @@ public class BoxingGloveController : MonoBehaviour
     {
         bGL.ToggleCollider(false);
         charge = 0;
+        bGL.charge = 0;
         if (CameraManager.instance != null)
             CameraManager.instance.playerGameUIs[playerController.id].UpdateSliderValue(Mathf.Abs(charge));
     }

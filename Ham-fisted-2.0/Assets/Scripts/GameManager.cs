@@ -104,23 +104,16 @@ public class GameManager : MonoBehaviour
             return;
         if (alivePlayers == 1)
         {
-            WinGame(players.First(p => !p.dead).id);
+            StartCoroutine(WinGame(players.First(x => !x.dead).id));
+
         }
         else if (alivePlayers < 1)
         {
-            // Debug for testing on singleplayer Invoke("GoToStatsScreen", postGameTime);
             Invoke("GoBackToMenu", postGameTime);
             foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
                 cameraManager.playerGameUIs[pc.playerIndex].SetWinText("No one");
         }
     }
-
-    /*void SpawnPlayer()
-    {
-        GameObject playerObj = PhotonNetwork.Instantiate(playerPrefabLoc, spawnPoints[PhotonNetwork.LocalPlayer.ActorNumber - 1].transform.position, spawnPoints[PhotonNetwork.LocalPlayer.ActorNumber - 1].transform.rotation);
-
-        playerObj.GetComponentInChildren<PlayerController>().photonView.RPC("Initialize", RpcTarget.All, PhotonNetwork.LocalPlayer);
-    }*/
 
     public void StartGame ()
     {
@@ -133,18 +126,20 @@ public class GameManager : MonoBehaviour
         gameRunning = false;
         PlayerController[] rankedPlayers = players;
         rankedPlayers = rankedPlayers.OrderByDescending(p => p.kills).ThenByDescending(p => p.livesLeft).ToArray();
-        WinGame(rankedPlayers.First(x => !x.dead).id);
+        StartCoroutine(WinGame(rankedPlayers.First(x => !x.dead).id));
     }
 
-    void WinGame(int winningPlayer)
+    IEnumerator WinGame(int winningPlayer)
     {
-        onGameEnd.Invoke();
         gameRunning = false;
         PlayerConfigManager.instance.EnableControls("Menu");
         Cursor.lockState = CursorLockMode.Confined;
         // set the UI Win Text
         foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
             cameraManager.playerGameUIs[pc.playerIndex].SetWinText(GetPlayer(winningPlayer).nickname);
+        yield return new WaitForSeconds(postGameTime);
+        onGameEnd.Invoke();
+        yield return null;
     }
 
     void GoBackToMenu()

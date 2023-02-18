@@ -90,6 +90,9 @@ public class PlayerController : MonoBehaviour
         vCam.gameObject.layer = 6 + id;
         vCam.m_Follow = transform;
         vCam.m_LookAt = transform;
+        smokeSystem.ToggleParticles(false);
+        rig.angularVelocity = Vector3.zero;
+        rig.velocity = Vector3.zero;
         spectators = new();
         spectateTarget = null;
         if (inGameScene)
@@ -355,4 +358,9 @@ public class PlayerController : MonoBehaviour
             yield return null;
         }
     }
+
+    /*IEnumerator Rumble ()
+    {
+        yield return null;
+    }*/
 }

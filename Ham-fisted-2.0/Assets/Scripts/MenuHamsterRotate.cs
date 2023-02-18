@@ -6,9 +6,9 @@ public class MenuHamsterRotate : MonoBehaviour
 {
     private float rotateSpeed = 0;
     public float addSpeed = 0.1f;
-    void Update()
+    void FixedUpdate()
     {
         rotateSpeed += addSpeed;
-        transform.Rotate(rotateSpeed, 0, rotateSpeed);
+        transform.Rotate(rotateSpeed * Time.deltaTime, 0, rotateSpeed * Time.deltaTime);
     }
 }

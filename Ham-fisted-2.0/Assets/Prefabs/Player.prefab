@@ -598,10 +598,10 @@ MonoBehaviour:
   isAttacking: 0
   isBlocking: 0
   wasBlocked: 0
-  chargeAmount: 0.005
+  chargeAmount: 0.01
   shieldObj: {fileID: 3282736886920761616}
   shieldStunTime: 2
-  shieldDrainAmount: 0.5
+  shieldDrainAmount: 0.6
 --- !u!1 &2681180787901976656
 GameObject:
   m_ObjectHideFlags: 0
@@ -6246,7 +6246,7 @@ ParticleSystem:
   lengthInSec: 0.05
   simulationSpeed: 1
   stopAction: 0
-  cullingMode: 0
+  cullingMode: 3
   ringBufferMode: 0
   ringBufferLoopRange: {x: 0, y: 1}
   emitterVelocityMode: 1
@@ -6318,7 +6318,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: Infinity
+      scalar: 5
       minScalar: 5
       maxCurve:
         serializedVersion: 2
