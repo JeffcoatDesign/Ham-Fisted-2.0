@@ -6,6 +6,11 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using System.Linq;
 
+[System.Serializable]
+public class PlayerLeftEvent : UnityEvent<int> 
+{  
+}
+
 public class PlayerConfigManager : MonoBehaviour
 {
     public PlayerInputManager pIM;
@@ -14,7 +19,9 @@ public class PlayerConfigManager : MonoBehaviour
     public static PlayerConfigManager instance { get; private set; }
     public UnityEvent allReady;
     public UnityEvent firstPlayerJoined;
+    public UnityEvent firstPlayerLeft;
     public UnityEvent playerJoined;
+    public PlayerLeftEvent playerLeft;
     public Transform[] menuPositions;
 
     private void Awake()
@@ -38,8 +45,12 @@ public class PlayerConfigManager : MonoBehaviour
             allReady = new UnityEvent();
         if (firstPlayerJoined == null)
             firstPlayerJoined = new UnityEvent();
+        if (firstPlayerLeft == null)
+            firstPlayerLeft = new UnityEvent();
         if (playerJoined == null)
             playerJoined = new UnityEvent();
+        if (playerLeft == null)
+            playerLeft = new PlayerLeftEvent();
     }
 
     void ChangeActiveScene(Scene current, Scene next)
@@ -90,6 +101,10 @@ public class PlayerConfigManager : MonoBehaviour
         {
             playerConfigs.Add(new PlayerConfig(pi, player));
         }
+        else
+        {
+            StartCoroutine(FixIdenticalPlayers(pi, player));
+        }
         if (SceneManager.GetActiveScene().name == "Menu") { 
             PositionInMenu(playerConfigs[pi.playerIndex]);
             if(pi.playerIndex != 0)
@@ -97,11 +112,64 @@ public class PlayerConfigManager : MonoBehaviour
         }
     }
 
+    public void HandlePlayerLeave (PlayerConfig pc)
+    {
+        playerConfigs.Remove(pc);
+        int pIndex = 0;
+        foreach (PlayerConfig p in playerConfigs)
+        {
+            p.playerIndex = pIndex;
+            pIndex++;
+        }
+        playerLeft.Invoke(pc.playerIndex);
+        if (playerConfigs.Count < 1)
+            firstPlayerLeft.Invoke();
+    }
+
     [ContextMenu("Spawn Debug Character")]
     void SpawnDebugPlayer ()
     {
         InputSystem.AddDevice<Gamepad>();
         pIM.JoinPlayer();
+    }
+
+    IEnumerator FixIdenticalPlayers(PlayerInput pi, PlayerController player)
+    {
+        int removedPlayers = 0;
+        GameObject player1 = null;
+        GameObject player2 = null;
+        GameObject player3 = null;
+        if (playerConfigs.Count >= 1)
+        {
+            player1 = playerConfigs.First().Player.transform.parent.gameObject;
+            removedPlayers++;
+        }
+        if (playerConfigs.Count >= 2)
+        {
+            player2 = playerConfigs.First(pc => (pc.Player.transform.parent.gameObject != player1)).Player.transform.parent.gameObject;
+            removedPlayers++;
+        }
+        if (playerConfigs.Count >= 3)
+        {
+            player3 = playerConfigs.First(pc => (pc.Player.transform.parent.gameObject != player1) && (pc.Player.transform.parent.gameObject != player2)).Player.transform.parent.gameObject;
+            removedPlayers++;
+        }
+        Destroy(player1);
+        yield return null;
+        Destroy(player2);
+        yield return null;
+        Destroy(player3);
+        yield return null;
+        playerConfigs = new();
+        playerConfigs.Add(new PlayerConfig(pi, player));
+        for (int i = 0; i < removedPlayers; i++)
+        {
+            pIM.JoinPlayer();
+            yield return null;
+        }
+        playerConfigs.OrderBy(pc => pc.playerIndex);
+        PositionInMenu(playerConfigs[pi.playerIndex]);
+        yield return null;
     }
 
     void PositionInMenu(PlayerConfig pc)

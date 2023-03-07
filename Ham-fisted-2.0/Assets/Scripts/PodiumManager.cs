@@ -31,6 +31,8 @@ public class PodiumManager : MonoBehaviour
 
     private void SpawnStatsIcon(int player, int color, string type)
     {
+        if (player == -1)
+            return;
         Transform targetTransform;
         if (type == "ko")
             targetTransform = koContainers[player];
@@ -49,14 +51,19 @@ public class PodiumManager : MonoBehaviour
 
     int GetRankIndex(PlayerController[] rankedPlayers, int index)
     {
-        int rankIndex = 0;
-        PlayerController player = rankedPlayers.First(p => p.id == index);
-        for (int i = 0; i < rankedPlayers.Length; i++)
+        if (rankedPlayers.Any(p => p.id == index))
         {
-            if (player == rankedPlayers[i])
-                rankIndex = i;
+            int rankIndex = 0;
+            PlayerController player = rankedPlayers.First(p => p.id == index);
+            for (int i = 0; i < rankedPlayers.Length; i++)
+            {
+                if (player == rankedPlayers[i])
+                    rankIndex = i;
+            }
+            return rankIndex;
         }
-        return rankIndex;
+        else
+            return -1;
     }
 
     IEnumerator SummonPodium ()

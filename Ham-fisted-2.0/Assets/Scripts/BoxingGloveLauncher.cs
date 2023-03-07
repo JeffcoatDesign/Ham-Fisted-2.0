@@ -23,6 +23,10 @@ public class BoxingGloveLauncher : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
+        if (other.gameObject.CompareTag("Punchable") && !bGC.wasBlocked)
+        {
+            other.gameObject.GetComponent<Punchable>().GetHit(transform.forward, force + (charge * chargeMult), id);
+        }
         if (other.gameObject.CompareTag("Player") && wasBlockChecked && !bGC.wasBlocked)
         {
             other.gameObject.GetComponent<PlayerController>().GetHit(transform.forward, force + (charge * chargeMult), id);
@@ -30,15 +34,18 @@ public class BoxingGloveLauncher : MonoBehaviour
         }
         if (other.gameObject.CompareTag("Shield"))
         {
-            Debug.Log("Being blocked");
-            bGC.wasBlocked = true;
-            ToggleCollider(false);
+            if (other.gameObject.transform.parent != gameObject.transform.parent.transform.parent)
+            {
+                Debug.Log("Being blocked");
+                bGC.wasBlocked = true;
+                ToggleCollider(false);
 
-            Vector3 launchDir = other.transform.position - transform.position;
-            Quaternion rot = Quaternion.LookRotation(launchDir, Vector3.up);
-            GameObject hitObj = Instantiate(shieldEffect, transform.position + launchDir, rot);
-            StartCoroutine(DestroyHit(hitObj));
-            pc.StartStun();
+                Vector3 launchDir = other.transform.position - transform.position;
+                Quaternion rot = Quaternion.LookRotation(launchDir, Vector3.up);
+                GameObject hitObj = Instantiate(shieldEffect, transform.position + launchDir, rot);
+                StartCoroutine(DestroyHit(hitObj));
+                pc.StartStun();
+            }
         }
     }
     private void OnTriggerExit(Collider other)

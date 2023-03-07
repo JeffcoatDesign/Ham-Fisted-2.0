@@ -20,12 +20,13 @@ public class PlayerController : MonoBehaviour
     public Material mat;
     public Material boxingGloveMat;
     public MeshRenderer sphereBottom;
+    public MeshRenderer hamsterBodyMR;
     public MeshRenderer boxingGlove;
     public MeshRenderer sphereMinimap;
     public BoxingGloveController boxingGloveController;
-    public Color[] colors;
 
     [SerializeField] private PlayerModel playerModel;
+    [SerializeField] private RadialIndicator radialIndicator;
 
     [Header("Camera Shake")]
     [SerializeField] private float lurchThreshhold = 85.5f;
@@ -79,6 +80,7 @@ public class PlayerController : MonoBehaviour
 
     public void Initialize(PlayerConfig player)
     {
+        radialIndicator.ResetValues();
         starsSystem.gameObject.SetActive(false);
         isStunned = false;
         dead = false;
@@ -90,6 +92,7 @@ public class PlayerController : MonoBehaviour
         vCam.gameObject.layer = 6 + id;
         vCam.m_Follow = transform;
         vCam.m_LookAt = transform;
+        radialIndicator.transform.parent.gameObject.layer = 6 + id;
         smokeSystem.ToggleParticles(false);
         rig.angularVelocity = Vector3.zero;
         rig.velocity = Vector3.zero;
@@ -143,7 +146,7 @@ public class PlayerController : MonoBehaviour
 
     void CheckGround()
     {
-        Ray ray = new (transform.position, Vector3.down);
+        Ray ray = new(transform.position, Vector3.down);
         if (Physics.Raycast(ray, 1.1f))
             isGrounded = true;
         else
@@ -191,6 +194,18 @@ public class PlayerController : MonoBehaviour
         spawnPoint.isCollidingWithPlayer = true;
     }
 
+    public void LeaveGame() {
+        if (GameManager.instance != null)
+        {
+            Die();
+        }
+        if (GameManager.instance == null || GameManager.instance.alivePlayers >= 1)
+        {
+            PlayerConfigManager.instance.HandlePlayerLeave(playerConfig);
+            Destroy(transform.parent.gameObject);
+        }
+    }
+
     public void SetLocation (Transform targetTransform, bool flipped)
     {
         float cRot = targetTransform.rotation.eulerAngles.y;
@@ -224,9 +239,10 @@ public class PlayerController : MonoBehaviour
         GameManager.instance.CheckWinCondition();
     }
 
-    void SetColor(int index)
+    public void SetColor(int index)
     {
-        Color color = colors[index];
+        Color color = ColorManager.instance.colors[index];
+        hamsterBodyMR.material = ColorManager.instance.playerSkins[index];
         if (CameraManager.instance != null)
         {
             CameraManager.instance.playerGameUIs[id].SetSliderColor(color);

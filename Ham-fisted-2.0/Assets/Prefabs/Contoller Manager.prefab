@@ -191,6 +191,7 @@ GameObject:
   - component: {fileID: 7214235955417982701}
   - component: {fileID: 7214235955417982702}
   - component: {fileID: 7214235955417982703}
+  - component: {fileID: 4135501540649617704}
   m_Layer: 0
   m_Name: Contoller Manager
   m_TagString: Untagged
@@ -237,7 +238,13 @@ MonoBehaviour:
   firstPlayerJoined:
     m_PersistentCalls:
       m_Calls: []
+  firstPlayerLeft:
+    m_PersistentCalls:
+      m_Calls: []
   playerJoined:
+    m_PersistentCalls:
+      m_Calls: []
+  playerLeft:
     m_PersistentCalls:
       m_Calls: []
   menuPositions:
@@ -325,3 +332,33 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
+--- !u!114 &4135501540649617704
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7214235955417982696}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a6ab89f806bdcb4da3db476b1e581f3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  colors:
+  - {r: 1, g: 0.07912114, b: 0, a: 1}
+  - {r: 0, g: 0.08052492, b: 1, a: 1}
+  - {r: 1, g: 0.71590984, b: 0, a: 1}
+  - {r: 0, g: 1, b: 0.02294755, a: 1}
+  - {r: 0.64758873, g: 0, b: 1, a: 1}
+  - {r: 0, g: 1, b: 0.6145878, a: 1}
+  - {r: 1, g: 0.4533755, b: 0, a: 1}
+  - {r: 1, g: 0, b: 0.6735892, a: 1}
+  - {r: 0.008899908, g: 0.3650272, b: 0.5660378, a: 1}
+  - {r: 0.2551749, g: 0.13266875, b: 0.49056602, a: 1}
+  - {r: 0.41509432, g: 0.20113665, b: 0, a: 1}
+  - {r: 0.5549201, g: 1, b: 0, a: 1}
+  playerSkins:
+  - {fileID: 2100000, guid: 866a6c00e68e5504a8c629f59d52f32f, type: 2}
+  - {fileID: 2100000, guid: ac04d1078c184e24bb82b6b44afc885f, type: 2}
+  - {fileID: 2100000, guid: 80975815e87b0e14097d816790b9e844, type: 2}
+  - {fileID: 2100000, guid: 7c06bc0f5e0d941489df22fe586345ca, type: 2}

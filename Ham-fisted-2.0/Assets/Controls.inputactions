@@ -40,6 +40,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "Leave Game",
+                    "type": "Button",
+                    "id": "835236a8-0c03-4354-a062-1c726c44c2b6",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 }
             ],
             "bindings": [
@@ -174,6 +183,28 @@
                     "action": "Shield",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "13f6fe25-70fe-47fd-a5f0-98239f824c36",
+                    "path": "<Keyboard>/escape",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "Leave Game",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7fcbbc55-e4b4-45f6-b737-931237bbf282",
+                    "path": "<Gamepad>/start",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Controller",
+                    "action": "Leave Game",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },
@@ -210,7 +241,7 @@
                 },
                 {
                     "name": "Pointer",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "e0e33a10-ce90-44b1-8385-df92193a1be7",
                     "expectedControlType": "Vector2",
                     "processors": "",
@@ -387,6 +418,17 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "Keyboard&Mouse",
+                    "action": "Pointer",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "10904414-a84e-49f6-be1a-a0ea73c5f95d",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Controller",
                     "action": "Pointer",
                     "isComposite": false,
                     "isPartOfComposite": false

@@ -49,23 +49,25 @@ public class Menu : MonoBehaviour
 
     void Start ()
     {
+        PlayerConfigManager cM;
         if (PlayerConfigManager.instance == null) {
-            PlayerConfigManager cM = Instantiate(pCM).GetComponent<PlayerConfigManager>();
-            cM.firstPlayerJoined.AddListener(OnPlayerOneJoined);
-            cM.playerJoined.AddListener(OnPlayerJoined);
+            cM = Instantiate(pCM).GetComponent<PlayerConfigManager>();
             SetScreen(startScreen);
         }
         else
         {
-            PlayerConfigManager cM = PlayerConfigManager.instance;
-            cM.firstPlayerJoined.AddListener(OnPlayerOneJoined);
-            cM.playerJoined.AddListener(OnPlayerJoined);
+            cM = PlayerConfigManager.instance;
             SetScreen(lobbyScreen);
             foreach(PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
             {
                 HideLabel(playerLabels[pc.playerIndex]);
             }
         }
+
+        cM.firstPlayerJoined.AddListener(OnPlayerOneJoined);
+        cM.firstPlayerLeft.AddListener(OnPlayerOneLeft);
+        cM.playerJoined.AddListener(OnPlayerJoined);
+        cM.playerLeft.AddListener(OnPlayerLeft);
         //enable the cursor
         Cursor.lockState = CursorLockMode.None;
 
@@ -108,6 +110,10 @@ public class Menu : MonoBehaviour
     {
         StartCoroutine(WaitToStart());
     }
+    public void OnPlayerOneLeft()
+    {
+        SetScreen(startScreen);
+    }
 
     public void OnPlayerJoined ()
     {
@@ -118,6 +124,11 @@ public class Menu : MonoBehaviour
     {
         yield return new WaitForEndOfFrame();
         SetScreen(mainScreen);
+    }
+
+    public void OnPlayerLeft(int index)
+    {
+        ShowLabel(playerLabels[index]);
     }
 
     public void OnBackButton ()

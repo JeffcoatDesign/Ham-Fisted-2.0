@@ -61,6 +61,7 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         cameraManager.Initiate(playersInGame);
         StartCoroutine(TimedStart());
+        PlayerConfigManager.instance.playerLeft.AddListener(HandlePlayerLeave);
     }
 
     private void FixedUpdate()
@@ -155,6 +156,21 @@ public class GameManager : MonoBehaviour
             SpawnPoint tempSP = spawnPoints[randomIndex];
             spawnPoints[randomIndex] = spawnPoints[i];
             spawnPoints[i] = tempSP;
+        }
+    }
+
+    public void HandlePlayerLeave(int index)
+    {
+        players = new PlayerController[PlayerConfigManager.instance.playerConfigs.Count];
+        alivePlayers = 0;
+        playersInGame = 0;
+        foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
+        {
+            players[pc.playerIndex] = pc.Player;
+            pc.Player.SetColor(pc.playerIndex);
+            alivePlayers++;
+            playersInGame++;
+            ShuffleSpawnPoints();
         }
     }
 
