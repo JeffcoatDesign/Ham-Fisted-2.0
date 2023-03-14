@@ -11,7 +11,17 @@ public class PlayerController : MonoBehaviour
     public PlayerInput playerInput;
     public float speed;
     public float hitCreditTime = 10.0f;
-    public bool inGameScene;
+    private bool InGameScene = false;
+    public bool inGameScene 
+    { 
+        get { return InGameScene; } 
+        set 
+        { 
+            InGameScene = value; 
+            hSM.SetState("isFighting", value); 
+            hSM.ResetState(); 
+        } 
+    }
     public bool dead = false;
     public Rigidbody rig;
     public CinemachineVirtualCamera vCam;
@@ -20,11 +30,13 @@ public class PlayerController : MonoBehaviour
     public Material mat;
     public Material boxingGloveMat;
     public MeshRenderer sphereBottom;
-    public MeshRenderer hamsterBodyMR;
+    public SkinnedMeshRenderer hamsterBodyMR;
     public MeshRenderer boxingGlove;
     public MeshRenderer sphereMinimap;
     public BoxingGloveController boxingGloveController;
 
+
+    [SerializeField] private HamsterStateMachine hSM;
     [SerializeField] private PlayerModel playerModel;
     [SerializeField] private RadialIndicator radialIndicator;
 
@@ -99,9 +111,7 @@ public class PlayerController : MonoBehaviour
         spectators = new();
         spectateTarget = null;
         if (inGameScene)
-        {
             livesLeft = GameManager.instance.playerLives;
-        }
         SetColor(id);
         nickname = "Player " + (id + 1);
         lastHitBy = id;
@@ -129,13 +139,19 @@ public class PlayerController : MonoBehaviour
         Vector3 moveDirection = FlattenCameraInput(controllerInput);
 
         if (isGrounded && controllerInput.magnitude != 0)
-            rig.AddForce(moveDirection, ForceMode.Force);
+        {
+                hSM.SetSpeed(0.5f + Mathf.Abs(controllerInput.magnitude / 20));
+                rig.AddForce(moveDirection, ForceMode.Force);
+        }
+        if (!isGrounded) hSM.SetSpeed(0.5f + Mathf.Abs(0));
     }
 
     public void OnMove(InputAction.CallbackContext ctx) => movementInput = ctx.ReadValue<Vector2>();
 
     void CheckVelocity()
     {
+        Vector2 xzVelocity = new (rig.velocity.x, rig.velocity.z);
+        hSM.SetSpeed(0.5f + Mathf.Abs(xzVelocity.magnitude / 10));
         if (oldVelocity - rig.velocity.sqrMagnitude > lurchThreshhold)
         {
             StartCoroutine(ShakeCamera(lurchShakeIntensity, lurchShakeTime));
@@ -180,6 +196,7 @@ public class PlayerController : MonoBehaviour
             Die();
         if (dead)
             return;
+        hSM.ResetState();
         rig.velocity = Vector3.zero;
         oldVelocity = rig.velocity.sqrMagnitude;
         boxingGloveController.ClearCharge();
@@ -218,6 +235,7 @@ public class PlayerController : MonoBehaviour
         if (flipped)
             cRot += 180;
         vCam.GetCinemachineComponent<CinemachineOrbitalTransposer>().m_XAxis.Value = cRot;
+        hSM.ResetState();
     }
 
     public void AddKO(int index)
@@ -285,6 +303,12 @@ public class PlayerController : MonoBehaviour
     public void StartStun()
     {
         StartCoroutine(Stun());
+    }
+
+    public void PodiumAnimation(int rank)
+    {
+        if (rank == 1)
+            hSM.StartAnim("celebrate", Expression.Happy);
     }
 
     void MoveSpectators()
@@ -368,8 +392,11 @@ public class PlayerController : MonoBehaviour
             isStunned = true;
             starsSystem.gameObject.SetActive(true);
             starsSystem.ToggleParticles(true);
+            hSM.SetState("isStunned", true);
+            hSM.SetExpression(Expression.Hurt);
             yield return new WaitForSeconds(boxingGloveController.ShieldStunTime);
             isStunned = false;
+            hSM.ResetState();
             starsSystem.gameObject.SetActive(false);
             yield return null;
         }

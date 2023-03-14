@@ -75,6 +75,7 @@ public class PodiumManager : MonoBehaviour
         {
             podiums[i].SetActive(true);
             rankedPlayers[i].SetLocation(podiumPositions[i], true);
+            rankedPlayers[i].PodiumAnimation(i + 1);
             //rankedPlayers[i].SetPosition(podiumPositions[i].transform);
         }
         if (statTracker.kos != null)

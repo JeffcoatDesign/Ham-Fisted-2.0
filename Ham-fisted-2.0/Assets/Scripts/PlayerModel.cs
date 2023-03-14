@@ -8,6 +8,7 @@ public class PlayerModel : MonoBehaviour
     public PlayerController playerController;
     public float rotateSpeed;
     public bool canRotate;
+    [SerializeField] private HamsterStateMachine hSM;
     private Vector2 movementInput;
 
     void Update()
@@ -16,6 +17,8 @@ public class PlayerModel : MonoBehaviour
 
         if (movementInput.x != 0 || movementInput.y != 0)
             RotateTo(FlattenInput(controllerInput));
+        else
+            hSM.SetState("isTurning", false);
 
         transform.position = playerController.transform.position;
     }
@@ -42,8 +45,16 @@ public class PlayerModel : MonoBehaviour
         float tr = target.eulerAngles.y;
         if (cr > tr || cr < tr)
         {
+            hSM.SetState("isTurning", true);
+            if (cr < tr - 1)
+                hSM.SetState("turningRight", true);
+            else if (cr > tr + 1)
+                hSM.SetState("turningRight", false);
+            else
+                hSM.SetState("isTurning", false);
             total = Quaternion.Euler(0, Mathf.LerpAngle(cr, tr, Time.deltaTime * rotateSpeed), 0);
             transform.rotation = total;
         }
+            
     }
 }
