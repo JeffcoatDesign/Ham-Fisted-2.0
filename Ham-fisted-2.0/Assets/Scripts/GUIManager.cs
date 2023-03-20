@@ -15,9 +15,14 @@ public class GUIManager : MonoBehaviour
     [SerializeField] private Button homeButton;
 
     public static GUIManager Instance { get; private set; }
-    public void Awake()
+    private void Awake()
     {
         Instance = this;
+    }
+
+    private void Start()
+    {
+        PodiumManager.instance.OnPodiumAppear.AddListener(ShowWinScreen);
     }
 
     public void SetMinimap(int numPlayers)

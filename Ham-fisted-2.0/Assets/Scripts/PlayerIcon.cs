@@ -26,6 +26,15 @@ public class PlayerIcon : MonoBehaviour
         color = GameManager.instance.colors[index];
         GetComponent<Image>().color = color;
     }
+    public void SetColor(Color color)
+    {
+        GetComponent<Image>().color = color;
+        if (lifeIcons.Length > 0)
+            foreach (GameObject lifeicon in lifeIcons)
+            {
+                lifeicon.GetComponent<Image>().color = color;
+            }
+    }
 
     public void SetNumber(int num)
     {

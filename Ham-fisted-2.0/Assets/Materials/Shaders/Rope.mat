@@ -107,8 +107,8 @@ Material:
     - _SrcBlend: 1
     - _Surface: 0
     - _Threshold: -0.6
-    - _Tightening: 3.58
-    - _TileScale: -3.15
+    - _Tightening: 4
+    - _TileScale: 19.6
     - _UVSec: 0
     - _WorkflowMode: 1
     - _ZWrite: 1
@@ -117,7 +117,7 @@ Material:
     - _Color: {r: 0.5, g: 0.2647059, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
-    - _StripeColor: {r: 0.6509434, g: 0.6509434, b: 0.6509434, a: 0}
+    - _StripeColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []
 --- !u!114 &3627407029436731696
 MonoBehaviour:

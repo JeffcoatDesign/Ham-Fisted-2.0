@@ -23,7 +23,8 @@ public class BoxingGloveController : MonoBehaviour
     public bool isBlocking = false;
     public bool wasBlocked = false;
     [SerializeField] private float chargeAmount = 0.01f;
-
+    [SerializeField] private MeshRenderer gloveMR;
+    [SerializeField] private MeshRenderer springMR;
     [Header("Shield")]
     [SerializeField] private GameObject shieldObj;
     [SerializeField] private float shieldStunTime;
@@ -173,5 +174,11 @@ public class BoxingGloveController : MonoBehaviour
         Debug.Log(size);
         Vector3 scale = new(.66f + size, .66f + size, .66f + size);
         bGL.transform.parent.parent.localScale = scale;
+    }
+
+    public void SetVisibility (bool visible)
+    {
+        springMR.enabled = visible;
+        gloveMR.enabled = visible;
     }
 }

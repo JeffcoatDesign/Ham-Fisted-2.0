@@ -170,6 +170,12 @@ public class Menu : MonoBehaviour
         SceneManager.LoadScene("Zone Test");
     }
 
+    [ContextMenu("Load Conveyers")]
+    void LoadCoveyers()
+    {
+        SceneManager.LoadScene("Brawl Conveyers");
+    }
+
     public void OnLeaveLobbyButton()
     {
         SetScreen(mainScreen);

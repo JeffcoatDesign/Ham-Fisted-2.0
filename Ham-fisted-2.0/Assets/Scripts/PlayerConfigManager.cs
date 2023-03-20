@@ -7,9 +7,7 @@ using UnityEngine.SceneManagement;
 using System.Linq;
 
 [System.Serializable]
-public class PlayerLeftEvent : UnityEvent<int> 
-{  
-}
+public class PlayerLeftEvent : UnityEvent<int>{}
 
 public class PlayerConfigManager : MonoBehaviour
 {
@@ -66,8 +64,11 @@ public class PlayerConfigManager : MonoBehaviour
             if (nextName == "Menu")
             {
                 PositionInMenu(pc);
+                pc.Player.ToggleGlove(true);
                 if (pc.playerIndex == 0)
+                {
                     pc.Input.SwitchCurrentActionMap("Menu");
+                }
             }
         }
     }
@@ -182,14 +183,22 @@ public class PlayerConfig
 {
     public PlayerInput Input { get; set; }
     public PlayerController Player { get; set; }
+    public Gamepad gamepad;
     public int playerIndex { get; set; }
     public bool IsReady;
+    public bool HasGamepad = false;
 
     public PlayerConfig(PlayerInput pi, PlayerController player)
     {
         playerIndex = pi.playerIndex;
         Player = player;
         Input = pi;
+        Gamepad tempGamepad = Input.GetDevice<Gamepad>();
+        if (tempGamepad != null)
+        {
+            gamepad = tempGamepad;
+            HasGamepad = true;
+        }
         Player.id = playerIndex;
         Player.Initialize(this);
     }

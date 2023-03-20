@@ -36,6 +36,7 @@ public class CameraManager : MonoBehaviour
             playerGameUIs[0].gameObject.SetActive(true);
             playerGameUIs[1].gameObject.SetActive(true);
             playerGameUIs[2].gameObject.SetActive(true);
+            playerGameUIs[3].HideGUI();
         }
         else if (numLocPlayers == 4)
         {

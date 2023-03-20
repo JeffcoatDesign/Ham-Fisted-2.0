@@ -326,7 +326,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2213968062324636080}
-  m_LocalRotation: {x: 0.16622469, y: 0.000000016967004, z: -0.0000000028601248, w: 0.9860879}
+  m_LocalRotation: {x: 0.16622469, y: -0.000000016967007, z: 0.0000000028601255, w: 0.9860879}
   m_LocalPosition: {x: 0, y: 3.47, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -519,6 +519,8 @@ MonoBehaviour:
   isBlocking: 0
   wasBlocked: 0
   chargeAmount: 0.01
+  gloveMR: {fileID: 4205954290442285189}
+  springMR: {fileID: 2628984663629973903}
   shieldObj: {fileID: 3282736886920761616}
   shieldStunTime: 2
   shieldDrainAmount: 0.6
@@ -6117,7 +6119,7 @@ GameObject:
   - component: {fileID: 4304247355262021967}
   - component: {fileID: 2628984663629973903}
   m_Layer: 0
-  m_Name: spring
+  m_Name: Spring
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -11367,6 +11369,8 @@ GameObject:
   - component: {fileID: 9147769247874699252}
   - component: {fileID: 9147769247874699253}
   - component: {fileID: 7006284733345955830}
+  - component: {fileID: 9036314944223277606}
+  - component: {fileID: 5154762151772840641}
   m_Layer: 0
   m_Name: PlayerBall
   m_TagString: Player
@@ -11409,6 +11413,7 @@ MonoBehaviour:
   playerInput: {fileID: 0}
   speed: 20
   hitCreditTime: 5
+  deathRank: -1
   dead: 0
   rig: {fileID: 9147769247874699253}
   vCam: {fileID: 7672768763430499471}
@@ -11435,6 +11440,11 @@ MonoBehaviour:
   smokeTrailTime: 0.75
   smokeSystem: {fileID: 8395101380833281355}
   starsSystem: {fileID: 2988932715950894365}
+  chirping: {fileID: 8300000, guid: 73011e082acdd0e43af1ae774ad41423, type: 3}
+  chirpPitch: 0.75
+  falling: {fileID: 8300000, guid: dda11d3c072be1041ae9ed0dd87193fe, type: 3}
+  fallPitch: 0.5
+  audioSource: {fileID: 9036314944223277606}
   kills: 0
   livesLeft: 0
 --- !u!135 &9147769247874699252
@@ -11607,11 +11617,154 @@ MonoBehaviour:
       m_Calls: []
     m_ActionId: 87ecbf92-05cc-4ba7-851d-e97f01f3da37
     m_ActionName: Menu/Leave Game[/Keyboard/escape,/XInputControllerWindows/buttonEast]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 9147769247874699254}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: SpectateLeft
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 24be1b17-e31b-4866-809d-dd6840ade2fd
+    m_ActionName: Game/SpectateLeft[/Mouse/leftButton,/XInputControllerWindows/leftTrigger,/Gamepad/leftTrigger,/Gamepad1/leftTrigger]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 9147769247874699254}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: SpectateRight
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: 768ddd06-8a06-4faf-b823-84ddc33e4865
+    m_ActionName: Game/SpectateRight[/Mouse/rightButton,/XInputControllerWindows/rightTrigger,/Gamepad/rightTrigger,/Gamepad1/rightTrigger]
   m_NeverAutoSwitchControlSchemes: 1
   m_DefaultControlScheme: 
   m_DefaultActionMap: Menu
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!82 &9036314944223277606
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9147769247874699255}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 8300000, guid: 73011e082acdd0e43af1ae774ad41423, type: 3}
+  m_PlayOnAwake: 0
+  m_Volume: 0.537
+  m_Pitch: 0.75
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+--- !u!114 &5154762151772840641
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9147769247874699255}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b0e338037121284382b6bfdb344d3c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  volumeParameter: sfxVolume
+  audioSource: {fileID: 9036314944223277606}
+  volumeSlider: {fileID: 0}
 --- !u!1001 &209077887309648529
 PrefabInstance:
   m_ObjectHideFlags: 0

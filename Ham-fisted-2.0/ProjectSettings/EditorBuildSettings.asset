@@ -27,7 +27,7 @@ EditorBuildSettings:
     path: Assets/Scenes/Brawl Rooftop.unity
     guid: 089d810d41faf364691fcf79f626f573
   - enabled: 1
-    path: Assets/Scenes/Your Level.unity
-    guid: 852400708e4224e4bbc8928d0bcb3dcb
+    path: Assets/Scenes/Brawl Factory.unity
+    guid: 03dee8943fed1b74ca20f17e55da4f9b
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 8e11d88b0becc92408bb616748def0c9, type: 2}

@@ -6,11 +6,20 @@ using TMPro;
 
 public class PlayerGameUI : MonoBehaviour
 {
+    public int id = -1;
     [SerializeField] private Transform livesRow;
+    [SerializeField] private Transform sliderContainer;
+    [SerializeField] private Transform controlsContainer;
+    [SerializeField] private Transform deadScreen;
     [SerializeField] private GameObject playerIconPrefab;
     [SerializeField] private TextMeshProUGUI winText;
     [SerializeField] private Image sliderFill;
     [SerializeField] private Slider chargeSlider;
+    [SerializeField] private ControlIcon attackIcon;
+    [SerializeField] private ControlIcon shieldIcon;
+    [SerializeField] private ControlIcon leaveIcon;
+    [SerializeField] private ControlIcon nextIcon;
+    [SerializeField] private ControlIcon lastIcon;
     private float currentChargeValue;
 
     private PlayerIcon[] icons = new PlayerIcon[12];
@@ -21,13 +30,34 @@ public class PlayerGameUI : MonoBehaviour
         StartCoroutine(LerpSlider());
     }
 
+    public void SetScheme(ControlIconScheme controlIconScheme)
+    {
+        deadScreen.gameObject.SetActive(true);
+        attackIcon.SwitchScheme(controlIconScheme);
+        shieldIcon.SwitchScheme(controlIconScheme);
+        leaveIcon.SwitchScheme(controlIconScheme);
+        nextIcon.SwitchScheme(controlIconScheme);
+        lastIcon.SwitchScheme(controlIconScheme);
+        deadScreen.gameObject.SetActive(false);
+    }
+
+    public void Start()
+    {
+        PodiumManager.instance.WinnersEvent.AddListener(SetText);
+        deadScreen.gameObject.SetActive(false);
+    }
+
     public void SetSliderColor (Color color)
     {
         sliderFill.color = color;
+        if (icons[id] != null)
+            icons[id].SetColor(color);
     }
 
     public void SpawnPlayerIcon (int index)
     {
+        GameManager.instance.players[index].OnDie.AddListener(EnableDeadGUI);
+        if (id < 0) id = index;
         PlayerIcon icon = Instantiate(playerIconPrefab, livesRow).GetComponentInChildren<PlayerIcon>();
         icon.SetNumber(index);
         icon.SetColor(index);
@@ -45,11 +75,6 @@ public class PlayerGameUI : MonoBehaviour
         icons[index].Remove();
     }
 
-    public void SetWinText (string text)
-    {
-        winText.gameObject.SetActive(true);
-        winText.text = text + " is the Champion";
-    }
     public void SetText(string text)
     {
         winText.gameObject.SetActive(true);
@@ -60,6 +85,21 @@ public class PlayerGameUI : MonoBehaviour
     {
         winText.gameObject.SetActive(false);
         winText.text = "";
+    }
+
+    public void EnableDeadGUI ()
+    {
+        sliderContainer.gameObject.SetActive(false);
+        controlsContainer.gameObject.SetActive(false);
+        deadScreen.gameObject.SetActive(true);
+    }
+
+    public void HideGUI ()
+    {
+        sliderContainer.gameObject.SetActive(false);
+        controlsContainer.gameObject.SetActive(false);
+        deadScreen.gameObject.SetActive(false);
+        SetText("");
     }
 
     IEnumerator LerpSlider ()

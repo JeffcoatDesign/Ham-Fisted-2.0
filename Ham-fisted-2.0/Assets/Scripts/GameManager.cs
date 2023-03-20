@@ -11,7 +11,6 @@ public class GameManager : MonoBehaviour
     public string gamemode;
     public bool isTimeBased;
     public float gameTime;
-    public float postGameTime;
     public bool playersRespawn;
     public int playerLives;
     public float fallY;
@@ -30,6 +29,10 @@ public class GameManager : MonoBehaviour
     private CameraManager cameraManager;
 
     public UnityEvent onGameEnd;
+
+    [Header("Sound")]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip fanfare;
 
     public static GameManager instance;
 
@@ -51,6 +54,10 @@ public class GameManager : MonoBehaviour
             alivePlayers++;
             playersInGame++;
             cameraManager.playerGameUIs[pc.playerIndex].SpawnPlayerIcon(pc.playerIndex);
+            if (pc.HasGamepad)
+                cameraManager.playerGameUIs[pc.playerIndex].SetScheme(ControlIconScheme.controller);
+            else
+                cameraManager.playerGameUIs[pc.playerIndex].SetScheme(ControlIconScheme.keyboard);
             SpawnPoint sp = spawnPoints.First(sp => !sp.isCollidingWithPlayer);
             pc.Player.SetLocation(sp.transform, false);
             sp.isCollidingWithPlayer = true;
@@ -110,9 +117,9 @@ public class GameManager : MonoBehaviour
         }
         else if (alivePlayers < 1)
         {
-            Invoke("GoBackToMenu", postGameTime);
+            Invoke("GoBackToMenu", 5f);
             foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
-                cameraManager.playerGameUIs[pc.playerIndex].SetWinText("No one");
+                cameraManager.playerGameUIs[pc.playerIndex].SetText("No one wins.");
         }
     }
 
@@ -135,10 +142,10 @@ public class GameManager : MonoBehaviour
         gameRunning = false;
         PlayerConfigManager.instance.EnableControls("Menu");
         Cursor.lockState = CursorLockMode.Confined;
-        // set the UI Win Text
-        foreach (PlayerConfig pc in PlayerConfigManager.instance.playerConfigs)
-            cameraManager.playerGameUIs[pc.playerIndex].SetWinText(GetPlayer(winningPlayer).nickname);
-        yield return new WaitForSeconds(postGameTime);
+        audioSource.Stop();
+        audioSource.loop = false;
+        audioSource.clip = fanfare;
+        audioSource.Play();
         onGameEnd.Invoke();
         yield return null;
     }

@@ -36,7 +36,6 @@ public class BoxingGloveLauncher : MonoBehaviour
         {
             if (other.gameObject.transform.parent != gameObject.transform.parent.transform.parent)
             {
-                Debug.Log("Being blocked");
                 bGC.wasBlocked = true;
                 ToggleCollider(false);
 

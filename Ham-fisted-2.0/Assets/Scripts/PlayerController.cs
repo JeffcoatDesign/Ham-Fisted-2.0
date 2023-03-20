@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Events;
 using System.Linq;
 using Cinemachine;
 
@@ -11,6 +12,7 @@ public class PlayerController : MonoBehaviour
     public PlayerInput playerInput;
     public float speed;
     public float hitCreditTime = 10.0f;
+    public int deathRank = -1;
     private bool InGameScene = false;
     public bool inGameScene 
     { 
@@ -34,6 +36,7 @@ public class PlayerController : MonoBehaviour
     public MeshRenderer boxingGlove;
     public MeshRenderer sphereMinimap;
     public BoxingGloveController boxingGloveController;
+    public UnityEvent OnDie;
 
 
     [SerializeField] private HamsterStateMachine hSM;
@@ -59,6 +62,13 @@ public class PlayerController : MonoBehaviour
 
     [Header("Stun Stars")]
     [SerializeField] private ParticleSystemController starsSystem;
+
+    [Header("Audio")]
+    [SerializeField] private AudioClip chirping;
+    [SerializeField] private float chirpPitch = 0.75f;
+    [SerializeField] private AudioClip falling;
+    [SerializeField] private float fallPitch = 1f;
+    [SerializeField] private AudioSource audioSource;
     private bool isStunned = false;
     public bool IsStunned { get { return isStunned; } }
 
@@ -83,6 +93,8 @@ public class PlayerController : MonoBehaviour
         vCamCOT = vCam.GetCinemachineComponent<CinemachineOrbitalTransposer>();
         vCamOffset = vCamCOT.m_FollowOffset;
         starsSystem.gameObject.SetActive(false);
+        if (OnDie == null)
+            OnDie = new();
     }
 
     public void LateInitialize(PlayerConfig player)
@@ -100,6 +112,7 @@ public class PlayerController : MonoBehaviour
         id = playerConfig.playerIndex;
         boxingGloveController.bGL.id = id;
         boxingGloveController.ClearCharge();
+        ToggleGlove(true);
         vCam.gameObject.GetComponent<CinemachineInputProvider>().PlayerIndex = id;
         vCam.gameObject.layer = 6 + id;
         vCam.m_Follow = transform;
@@ -163,7 +176,7 @@ public class PlayerController : MonoBehaviour
     void CheckGround()
     {
         Ray ray = new(transform.position, Vector3.down);
-        if (Physics.Raycast(ray, 1.1f))
+        if (Physics.Raycast(ray, 1.2f))
             isGrounded = true;
         else
             isGrounded = false;
@@ -186,6 +199,7 @@ public class PlayerController : MonoBehaviour
         StartCoroutine(StartSmokeTrail(forward));
         Vector3 launchDir = (forward).normalized;
         rig.AddForce(launchDir * force, ForceMode.Impulse);
+        StartCoroutine(Rumble(0.25f, 0.75f, 0.5f));
     }
 
     void Respawn()
@@ -215,6 +229,10 @@ public class PlayerController : MonoBehaviour
         if (GameManager.instance != null)
         {
             Die();
+            foreach (PlayerController player in GameManager.instance.players)
+            {
+                if (player.deathRank > deathRank) player.deathRank -= 1;
+            }
         }
         if (GameManager.instance == null || GameManager.instance.alivePlayers >= 1)
         {
@@ -228,7 +246,7 @@ public class PlayerController : MonoBehaviour
         float cRot = targetTransform.rotation.eulerAngles.y;
         rig.velocity = Vector3.zero;
         rig.angularVelocity = Vector3.zero;
-        transform.rotation = Quaternion.identity;
+        transform.rotation = Quaternion.Euler(45, cRot, 0);
         transform.position = targetTransform.position;
         boxingGloveController.transform.rotation = Quaternion.Euler(0, cRot, 0);
         playerModel.transform.rotation = Quaternion.Euler(0, cRot, 0);
@@ -247,13 +265,13 @@ public class PlayerController : MonoBehaviour
     public void Die()
     {
         dead = true;
+        deathRank = GameManager.instance.alivePlayers;
         GameManager.instance.alivePlayers -= 1;
         CameraManager.instance.playerGameUIs[id].RemoveIcon(id);
-
-        ChangeFocusedPlayer();
+        StartCoroutine(ChangeFocusedPlayer(false));
         if (spectators.Count != 0)
             MoveSpectators();
-
+        OnDie.Invoke();
         GameManager.instance.CheckWinCondition();
     }
 
@@ -276,20 +294,61 @@ public class PlayerController : MonoBehaviour
         sphereMinimap.material = mat;
     }
 
-    public void ChangeFocusedPlayer()
+    public void RehomeSpectator ()
     {
-        if (GameManager.instance.alivePlayers <= 0)
-            return;
-
-        if (spectateTarget != null)
-            spectateTarget.RemoveSpectator(id);
-
-        spectateTarget = GameManager.instance.players.First(x => !x.dead);
-        vCam.m_Follow = spectateTarget.transform;
-        vCam.m_LookAt = spectateTarget.transform;
-        spectateTarget.AddSpectator(playerConfig.playerIndex);
+        StartCoroutine(ChangeFocusedPlayer(false));
     }
 
+    public IEnumerator ChangeFocusedPlayer(bool reversed)
+    {
+        yield return new WaitForEndOfFrame();
+        if (GameManager.instance.alivePlayers > 0)
+        {
+            PlayerController[] alive = GameManager.instance.players.Where(p => !p.dead).ToArray();
+            Debug.Log(alive.Length);
+
+            if (reversed) alive.Reverse();
+
+            if (spectateTarget != null)
+            {
+                if (!spectateTarget.dead) alive = ReorderPlayers(alive, spectateTarget);
+                spectateTarget.RemoveSpectator(id);
+            }
+
+            if (GameManager.instance.alivePlayers > 1)
+                spectateTarget = alive.First(x => x != spectateTarget);
+            if (spectateTarget != null)
+            {
+                vCam.m_Follow = spectateTarget.transform;
+                vCam.m_LookAt = spectateTarget.transform;
+                spectateTarget.AddSpectator(playerConfig.playerIndex);
+            }
+        }
+        yield return null;
+    }
+
+    PlayerController[] ReorderPlayers (PlayerController[] players, PlayerController target)
+    {
+        List<PlayerController> playerList = new (players);
+        while (playerList.ElementAt(0) != target)
+        {
+            PlayerController player = playerList.ElementAt(0);
+            playerList.Remove(player);
+            playerList.Add(player);
+        }
+        return playerList.ToArray();
+    }
+
+    public void SpectateLeft(InputAction.CallbackContext context)
+    {
+        if (dead && context.phase == InputActionPhase.Performed)
+            StartCoroutine(ChangeFocusedPlayer(true));
+    }
+    public void SpectateRight(InputAction.CallbackContext context)
+    {
+        if (dead && context.phase == InputActionPhase.Performed)
+            StartCoroutine(ChangeFocusedPlayer(false));
+    }
     public void AddSpectator(int actorNumber)
     {
         spectators.Add(GameManager.instance.players.First(p => p.playerConfig.playerIndex == actorNumber));
@@ -309,6 +368,17 @@ public class PlayerController : MonoBehaviour
     {
         if (rank == 1)
             hSM.StartAnim("celebrate", Expression.Happy);
+        if (rank == 2)
+            hSM.SetExpression(Expression.Normal);
+        if (rank == 3)
+            hSM.SetExpression(Expression.Anger);
+        if (rank == 4)
+            hSM.StartAnim("cry", Expression.Sad);
+    }
+
+    public void ToggleGlove (bool active)
+    {
+        boxingGloveController.SetVisibility(active);
     }
 
     void MoveSpectators()
@@ -317,7 +387,7 @@ public class PlayerController : MonoBehaviour
             return;
         foreach (PlayerController spectator in spectators)
         {
-            spectator.Invoke("ChangeFocusedPlayer", 0.1f);
+            spectator.RehomeSpectator();
         }
     }
 
@@ -325,6 +395,10 @@ public class PlayerController : MonoBehaviour
     {
         if(!isFallingOut)
         {
+            audioSource.volume *= 1.5f;
+            audioSource.pitch = fallPitch;
+            audioSource.clip = falling;
+            audioSource.Play();
             livesLeft -= 1;
             if (StatTracker.instance != null)
             {
@@ -348,6 +422,7 @@ public class PlayerController : MonoBehaviour
             }
             isFallingOut = false;
             Respawn();
+            audioSource.volume /= 1.5f;
         }
 
         yield return null;
@@ -389,11 +464,15 @@ public class PlayerController : MonoBehaviour
     {
         if (!isStunned)
         {
+            audioSource.pitch = chirpPitch;
+            audioSource.clip = chirping;
+            audioSource.Play();
             isStunned = true;
             starsSystem.gameObject.SetActive(true);
             starsSystem.ToggleParticles(true);
             hSM.SetState("isStunned", true);
             hSM.SetExpression(Expression.Hurt);
+            StartCoroutine(Rumble(0.25f, 0.75f, 1f));
             yield return new WaitForSeconds(boxingGloveController.ShieldStunTime);
             isStunned = false;
             hSM.ResetState();
@@ -402,8 +481,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    /*IEnumerator Rumble ()
+    IEnumerator Rumble (float leftMotor, float rightMotor, float duration)
     {
+        if (playerConfig.HasGamepad)
+        {
+            playerConfig.gamepad.SetMotorSpeeds(leftMotor, rightMotor);
+            yield return new WaitForSeconds(duration);
+            playerConfig.gamepad.SetMotorSpeeds(0f, 0f);
+        }
         yield return null;
-    }*/
+    }
 }
